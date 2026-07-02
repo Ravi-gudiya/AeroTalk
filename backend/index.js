@@ -69,7 +69,8 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     // 1. Check if email exists in standard DB or modular JSON storage
     const existing = await DB.findUserByEmail(email);
-    const existingStorageUser = usersStorage.findUserByEmail(email);
+    const isSupabaseActive = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_KEY;
+    const existingStorageUser = !isSupabaseActive ? usersStorage.findUserByEmail(email) : null;
     if (existing || existingStorageUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
@@ -77,13 +78,15 @@ app.post('/api/auth/register', async (req, res) => {
     // 2. Hash password
     const passwordHash = await hashPassword(password);
 
-    // 3. Save to modular data/users.json storage
-    const storageUser = usersStorage.createUser(username, email, passwordHash);
-    if (!storageUser) {
-      return res.status(500).json({ error: 'Failed to create user storage entry' });
+    // 3. Save to modular data/users.json storage if local fallback mode
+    if (!isSupabaseActive) {
+      const storageUser = usersStorage.createUser(username, email, passwordHash);
+      if (!storageUser) {
+        return res.status(500).json({ error: 'Failed to create user storage entry' });
+      }
     }
 
-    // 4. Save to legacy relational mapping memory DB
+    // 4. Save to legacy relational mapping memory DB / Supabase DB
     const user = await DB.createUser(email, username, passwordHash);
 
     // 5. Generate login token and redirect response
