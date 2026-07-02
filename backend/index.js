@@ -39,7 +39,10 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-app.use(express.static(path.join(__dirname, '../dist')));
+const distPath = path.join(__dirname, '../dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
 
 // Configure Multer for File Uploads
 const storage = multer.diskStorage({
@@ -457,7 +460,12 @@ async function notifyFriendsPresence(email, isOnline) {
 
 // Fallback for Single Page App routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+  const distIndex = path.join(__dirname, '../dist/index.html');
+  if (fs.existsSync(distIndex)) {
+    res.sendFile(distIndex);
+  } else {
+    res.json({ status: 'active', message: 'AeroTalk Backend API is online.' });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
