@@ -30,6 +30,14 @@ const io = new Server(server, {
 });
 
 app.use(cors());
+
+app.use((req, res, next) => {
+  if (req.url.startsWith('//')) {
+    req.url = req.url.replace(/^\/+/, '/');
+  }
+  next();
+});
+
 app.use(express.json());
 // Serve uploads folder as static files
 app.use('/api/uploads', express.static(UPLOADS_DIR));
