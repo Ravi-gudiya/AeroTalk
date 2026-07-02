@@ -10,6 +10,10 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
   API_BASE_URL = 'http://localhost:5000';
 }
 
+if (API_BASE_URL.endsWith('/')) {
+  API_BASE_URL = API_BASE_URL.slice(0, -1);
+}
+
 function apiFetch(url, options = {}) {
   const absoluteUrl = url.startsWith('/api') ? `${API_BASE_URL}${url}` : url;
   return fetch(absoluteUrl, options);
