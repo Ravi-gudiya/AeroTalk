@@ -4,10 +4,10 @@ import { Peer } from 'peerjs';
 import { SoundEffects } from './sound-effects.js';
 
 // Production API endpoints configuration
-let API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aerotalk.onrender.com';
 
-if (window.location.hostname.includes('vercel.app') && API_BASE_URL === window.location.origin) {
-  API_BASE_URL = 'https://aerotalk.onrender.com';
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  API_BASE_URL = 'http://localhost:5000';
 }
 
 function apiFetch(url, options = {}) {
