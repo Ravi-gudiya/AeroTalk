@@ -4,7 +4,11 @@ import { Peer } from 'peerjs';
 import { SoundEffects } from './sound-effects.js';
 
 // Production API endpoints configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
+let API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
+
+if (window.location.hostname.includes('vercel.app') && API_BASE_URL === window.location.origin) {
+  API_BASE_URL = 'https://aerotalk.onrender.com';
+}
 
 function apiFetch(url, options = {}) {
   const absoluteUrl = url.startsWith('/api') ? `${API_BASE_URL}${url}` : url;
