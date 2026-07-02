@@ -88,6 +88,9 @@ app.post('/api/auth/register', async (req, res) => {
 
     // 4. Save to legacy relational mapping memory DB / Supabase DB
     const user = await DB.createUser(email, username, passwordHash);
+    if (!user) {
+      return res.status(500).json({ error: 'Database error: Failed to save user details.' });
+    }
 
     // 5. Generate login token and redirect response
     const token = generateToken(user);

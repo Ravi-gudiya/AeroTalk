@@ -56,31 +56,36 @@ export const DB = {
     const cleanEmail = email.toLowerCase().trim();
     
     if (isSupabaseActive()) {
-      const { data: newUser, error } = await supabase
-        .from('profiles')
-        .insert([{
-          email: cleanEmail,
-          username: username.trim(),
-          password_hash: passwordHash,
-          display_name: username.trim(),
-          theme: 'Aero Dark',
-          online_status: 'offline',
-          reputation: 100
-        }])
-        .select()
-        .single();
-        
-      if (error) {
-        console.error('Supabase createUser error:', error);
+      try {
+        const { data: newUser, error } = await supabase
+          .from('profiles')
+          .insert([{
+            email: cleanEmail,
+            username: username.trim(),
+            password_hash: passwordHash,
+            display_name: username.trim(),
+            theme: 'Aero Dark',
+            online_status: 'offline',
+            reputation: 100
+          }])
+          .select()
+          .single();
+          
+        if (error) {
+          console.error('[Supabase DB Error] createUser:', error);
+          return null;
+        }
+        return {
+          id: newUser.id,
+          email: newUser.email,
+          username: newUser.username,
+          passwordHash: newUser.password_hash,
+          avatarColor: '#8A2BE2'
+        };
+      } catch (ex) {
+        console.error('[Supabase Connection Exception] createUser failed:', ex);
         return null;
       }
-      return {
-        id: newUser.id,
-        email: newUser.email,
-        username: newUser.username,
-        passwordHash: newUser.password_hash,
-        avatarColor: '#8A2BE2'
-      };
     } else {
       const data = readLocalData();
       if (data.users.some(u => u.email === cleanEmail)) return null;
@@ -113,31 +118,40 @@ export const DB = {
     const cleanEmail = email.toLowerCase().trim();
     
     if (isSupabaseActive()) {
-      const { data: user, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('email', cleanEmail)
-        .maybeSingle();
-        
-      if (error || !user) return null;
-      return {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        passwordHash: user.password_hash,
-        avatarColor: '#8A2BE2',
-        avatarUrl: user.profile_photo || null,
-        coverUrl: user.cover_photo || null,
-        bio: user.bio,
-        skills: user.skills || [],
-        interests: user.interests || [],
-        education: user.education,
-        experience: user.experience,
-        portfolioUrl: user.portfolio_url,
-        reputationScore: user.reputation,
-        achievementBadges: user.verified ? ['verified'] : ['pioneer'],
-        lastSeen: user.last_seen
-      };
+      try {
+        const { data: user, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+          
+        if (error) {
+          console.error('[Supabase DB Error] findUserByEmail:', error);
+          return null;
+        }
+        if (!user) return null;
+        return {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          passwordHash: user.password_hash,
+          avatarColor: '#8A2BE2',
+          avatarUrl: user.profile_photo || null,
+          coverUrl: user.cover_photo || null,
+          bio: user.bio,
+          skills: user.skills || [],
+          interests: user.interests || [],
+          education: user.education,
+          experience: user.experience,
+          portfolioUrl: user.portfolio_url,
+          reputationScore: user.reputation,
+          achievementBadges: user.verified ? ['verified'] : ['pioneer'],
+          lastSeen: user.last_seen
+        };
+      } catch (ex) {
+        console.error('[Supabase Connection Exception] findUserByEmail failed:', ex);
+        return null;
+      }
     } else {
       const data = readLocalData();
       const user = data.users.find(u => u.email === cleanEmail);
