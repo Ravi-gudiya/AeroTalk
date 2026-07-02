@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroTalk | Premium Chat & Calling Platform</title>
+  <meta name="description" content="Connect, text chat, and make crystal-clear audio and video calls directly from your browser using WebRTC. Modern, secure, and instant peer-to-peer communication.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide icons from CDN for sleek UI indicators -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- LANDING PAGE -->
+  <div id="landing-screen" class="landing-overlay">
+    <div class="landing-content">
+      <header class="landing-header">
+        <div class="logo">
+          <i data-lucide="waves" class="logo-icon glow-accent"></i>
+          <h1>AeroTalk</h1>
+        </div>
+        <button id="landing-cta-top" class="btn btn-sm btn-outline">Sign In</button>
+      </header>
+      
+      <section class="hero-section">
+        <h2 class="hero-title">Conversations That Go Beyond.</h2>
+        <p class="hero-subtitle">Evolve your digital identity. Express yourself on the Social Feed, match skills dynamically, track life milestones, and connect securely with WebRTC HD Calling.</p>
+        
+        <div class="hero-ctas">
+          <button id="get-started-btn" class="btn btn-primary btn-lg">Get Started</button>
+          <button id="explore-demo-btn" class="btn btn-outline btn-lg"><i data-lucide="sparkles"></i> Explore AI Twin</button>
+        </div>
+      </section>
+
+      <!-- AI Interactive Preview Card -->
+      <section id="demo-card-container" class="demo-card-container hidden">
+        <div class="demo-card">
+          <header class="demo-card-header">
+            <span class="pulse-indicator"></span>
+            <h4>Interactive AI Twin Simulator</h4>
+            <button id="close-demo-btn" class="icon-btn-inline"><i data-lucide="x"></i></button>
+          </header>
+          <div id="demo-bot-log" class="demo-bot-log">
+            <div class="bot-msg">👋 Ask me anything about AeroTalk's features (e.g. Feed, Dream Boards, calling) or how user AI Twins work!</div>
+          </div>
+          <div class="demo-bot-input-row">
+            <input type="text" id="demo-bot-input" placeholder="Type a question...">
+            <button id="demo-bot-send" class="btn-circle btn-accent"><i data-lucide="send"></i></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="features-grid">
+        <div class="feature-card">
+          <i data-lucide="rss" class="feat-icon glow-cyan"></i>
+          <h3>Smart Fact-Checked Feed</h3>
+          <p>Read authenticated articles, filter posts by mood, and share cinematic collaborative memories.</p>
+        </div>
+        <div class="feature-card">
+          <i data-lucide="bot" class="feat-icon glow-purple"></i>
+          <h3>AI Twin Companion</h3>
+          <p>Train your AI Twin on selective profile elements. Visitors explore your world by conversing with your Twin.</p>
+        </div>
+        <div class="feature-card">
+          <i data-lucide="phone-call" class="feat-icon glow-cyan"></i>
+          <h3>Secure HD Streams</h3>
+          <p>Zero Peer ID copying. Connect instantly over STUN/TURN relays with absolute privacy control.</p>
+        </div>
+        <div class="feature-card">
+          <i data-lucide="target" class="feat-icon glow-purple"></i>
+          <h3>Dream Board Tracker</h3>
+          <p>Write your future goals, lock down time capsules, and match compatible mentors to trade skills.</p>
+        </div>
+      </section>
+
+      <footer class="landing-footer">
+        <p>&copy; 2026 AeroTalk Platform. Built for the future of human connection.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION SCREENS -->
+  <div id="auth-screen" class="auth-overlay hidden">
+    <div class="auth-card">
+      <header class="auth-card-top-nav">
+        <button id="back-to-landing-btn" class="icon-btn-inline" title="Back"><i data-lucide="arrow-left"></i> Back</button>
+      </header>
+      <div class="auth-header">
+        <i data-lucide="waves" class="logo-icon glow-accent"></i>
+        <h2>AeroTalk</h2>
+        <p id="auth-subtitle">Sign in to your secure account</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="input-group">
+          <label for="login-email">Email Address</label>
+          <input type="text" id="login-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="input-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+
+        <div class="sso-divider">
+          <span>Or login with</span>
+        </div>
+        <div class="sso-buttons-row">
+          <button type="button" class="sso-btn mock-sso-btn" data-provider="Google"><i data-lucide="chrome"></i> Google</button>
+          <button type="button" class="sso-btn mock-sso-btn" data-provider="GitHub"><i data-lucide="github"></i> GitHub</button>
+        </div>
+
+        <p class="auth-toggle-text">Don't have an account? <a href="#" id="show-register-btn">Create one</a></p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="input-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" placeholder="Display Name" required autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label for="reg-email">Email Address</label>
+          <input type="text" id="reg-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="input-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="Min. 6 characters" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-accent">Create Account</button>
+        <p class="auth-toggle-text">Already have an account? <a href="#" id="show-login-btn">Sign in</a></p>
+      </form>
+    </div>
+  </div>
+  <!-- MAIN APP CONTAINER -->
+  <div id="app" class="glass-bg hidden">
+    
+    <!-- PANEL 1: COLLAPSABLE LEFT NAVIGATION SIDEBAR (FAR LEFT) -->
+    <aside class="left-nav-sidebar" id="left-nav-sidebar">
+      <div class="sidebar-top-branding">
+        <div class="brand-logo-row">
+          <i data-lucide="waves" class="logo-icon glow-accent"></i>
+          <span class="brand-name">AeroTalk</span>
+        </div>
+        <div class="tagline-row">Where Conversations Fly.</div>
+        <button id="toggle-sidebar-expand" class="sidebar-toggle-chevron" title="Collapse Menu">
+          <i data-lucide="chevrons-left"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-navigation-items">
+        <button class="nav-item-btn" id="dock-home-btn" title="Home Hub">
+          <i data-lucide="home"></i>
+          <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item-btn active" id="dock-chats-btn" title="Conversations">
+          <i data-lucide="message-square"></i>
+          <span class="nav-label">Chat</span>
+          <span class="nav-badge" id="unread-chats-badge"></span>
+        </button>
+        <button class="nav-item-btn" id="dock-feed-btn" title="Social Feed">
+          <i data-lucide="rss"></i>
+          <span class="nav-label">Feed</span>
+        </button>
+        <button class="nav-item-btn" id="dock-dreams-btn" title="Communities">
+          <i data-lucide="target"></i>
+          <span class="nav-label">Communities</span>
+        </button>
+        <button class="nav-item-btn" id="dock-skills-btn" title="Discover Matches">
+          <i data-lucide="compass"></i>
+          <span class="nav-label">Discover</span>
+        </button>
+        <button class="nav-item-btn" id="dock-profile-btn" title="Digital Profile">
+          <i data-lucide="user"></i>
+          <span class="nav-label">Profile</span>
+        </button>
+        <button class="nav-item-btn" id="dock-themes-btn" title="Aero Themes">
+          <i data-lucide="palette"></i>
+          <span class="nav-label">Themes</span>
+        </button>
+        <button class="nav-item-btn" id="dock-privacy-btn" title="Privacy Settings">
+          <i data-lucide="shield-check"></i>
+          <span class="nav-label">Privacy</span>
+        </button>
+        <button class="nav-item-btn" id="dock-admin-btn" title="Admin Control Center">
+          <i data-lucide="shield-alert"></i>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom-actions">
+        <button id="logout-btn" class="nav-item-btn logout-nav-btn" title="Log Out">
+          <i data-lucide="log-out"></i>
+          <span class="nav-label">Log Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- PANEL 2: MIDDLE DRAWER LISTS PANEL -->
+    <aside class="sidebar app-sidebar-drawer">
+      
+      <!-- Drawer 1: Chats & Directory Drawer (Visible by default) -->
+      <div id="drawer-chats" class="sidebar-drawer-content">
+        
+        <!-- User Profile Card -->
+        <section class="section card user-profile-card">
+          <div class="profile-card-layout">
+            <div class="my-avatar-container" title="Click to change DP">
+              <div id="my-avatar" class="avatar clickable-avatar">U</div>
+              <input type="file" id="avatar-input" accept="image/*" class="hidden">
+              <div class="avatar-edit-overlay"><i data-lucide="camera" class="small-icon"></i></div>
+            </div>
+            <div class="profile-card-details">
+              <h3 id="my-username">Bob Williams</h3>
+              <p id="my-email">@bob</p>
+              <div class="status-indicator-row">
+                <span class="online-dot"></span>
+                <span>🟢 Online</span>
+              </div>
+              <span class="rep-badge"><i data-lucide="star"></i> Trusted Member</span>
+            </div>
+            <button id="my-settings-shortcut" class="settings-shortcut-btn" title="Settings">
+              <i data-lucide="settings"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- Rounded Search Bar & Filter Chips -->
+        <section class="section search-section">
+          <div class="search-container">
+            <div class="search-bar premium-search">
+              <input type="text" id="friend-search-input" placeholder="Search users, groups, messages, files...">
+              <button id="search-btn" class="search-action-btn"><i data-lucide="search"></i></button>
+            </div>
+            <ul id="search-results" class="search-results-dropdown hidden"></ul>
+          </div>
+          <div class="search-filter-chips mt-2">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="friends">Friends</button>
+            <button class="filter-chip" data-filter="groups">Groups</button>
+            <button class="filter-chip" data-filter="messages">Messages</button>
+            <button class="filter-chip" data-filter="media">Media</button>
+          </div>
+        </section>
+
+        <!-- Friends Directory with requests -->
+        <section class="section">
+          <h2>Friends Directory</h2>
+          
+          <!-- Incoming and Outgoing Request cards containers -->
+          <div id="incoming-requests-list" class="requests-stack mt-2 mb-2"></div>
+          
+          <ul id="friends-list" class="recent-list mt-2">
+            <li class="empty-state">No friends added yet. Search above to add.</li>
+          </ul>
+        </section>
+
+        <!-- Groups with Floating Premium Action button -->
+        <section class="section">
+          <div class="section-header-row">
+            <h2>Groups & Communities</h2>
+            <button id="open-create-group-btn" class="btn btn-accent btn-sm-action floating-action-btn">
+              <i data-lucide="plus"></i> New Group
+            </button>
+          </div>
+          <ul id="groups-list" class="recent-list">
+            <li class="empty-state">
+              <div class="empty-illustration">
+                <i data-lucide="layers" class="large-icon"></i>
+                <p>No groups yet</p>
+                <button class="btn btn-sm btn-outline mt-2" id="empty-create-group-btn">Create Group</button>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Recent Conversations -->
+        <section class="section">
+          <h2>Recent Conversations</h2>
+          <ul id="active-chats-list" class="recent-list">
+            <li class="empty-state">No active chats. Find a friend to connect.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Drawer 2: Social Feed Controls -->
+      <div id="drawer-feed" class="sidebar-drawer-content hidden">
+        <h2>Feed Engine</h2>
+        <div class="card panel-info-card">
+          <label>Mood State filter</label>
+          <div class="mood-dock-vertical">
+            <button class="mood-pill active" data-mood="all"><i data-lucide="smile"></i> All Moods</button>
+            <button class="mood-pill" data-mood="Motivated">🎯 Motivated</button>
+            <button class="mood-pill" data-mood="Curious">💡 Curious</button>
+            <button class="mood-pill" data-mood="Focused">🧠 Focused</button>
+            <button class="mood-pill" data-mood="Relaxed">🌿 Relaxed</button>
+          </div>
+        </div>
+        <div class="card panel-info-card mt-3">
+          <label>Feed Categories</label>
+          <ul class="categories-list-sidebar">
+            <li class="active"><i data-lucide="globe"></i> All Stories</li>
+            <li><i data-lucide="cpu"></i> Technology</li>
+            <li><i data-lucide="rocket"></i> Startups</li>
+            <li><i data-lucide="camera"></i> Photography</li>
+            <li><i data-lucide="music"></i> Music</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Drawer 3: Digital Profile stats -->
+      <div id="drawer-profile" class="sidebar-drawer-content hidden">
+        <h2>Digital Hub</h2>
+        <div class="card panel-info-card text-center py-4">
+          <div class="reputation-badge-large">
+            <i data-lucide="award" class="glow-accent large-icon mb-2"></i>
+            <h3>Reputation Score</h3>
+            <div class="rep-score-value" id="my-rep-score">100</div>
+          </div>
+        </div>
+        <div class="card panel-info-card mt-3">
+          <label>Badges & Verification</label>
+          <div class="badges-row">
+            <span class="badge-tag gold" title="First Member Pioneer"><i data-lucide="shield-check"></i> Pioneer</span>
+            <span class="badge-tag cyan" title="Trust Score Verified"><i data-lucide="check-circle"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer 4: Dreams & capsules lists -->
+      <div id="drawer-dreams" class="sidebar-drawer-content hidden">
+        <h2>Time Vault</h2>
+        <div class="card panel-info-card">
+          <label>Time Capsules</label>
+          <p class="small-text text-muted mb-3">Locked messages scheduled to release in the future.</p>
+          <ul id="capsules-list" class="vault-items-list">
+            <li class="empty-state">No capsules sealed yet.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Drawer 5: Skills settings -->
+      <div id="drawer-skills" class="sidebar-drawer-content hidden">
+        <h2>Exchange Desk</h2>
+        <div class="card panel-info-card">
+          <label>Your Teachings</label>
+          <div class="skills-input-group mt-2">
+            <span class="skill-chip">Python</span>
+            <span class="skill-chip">UI Design</span>
+          </div>
+        </div>
+        <div class="card panel-info-card mt-3">
+          <label>Interested In</label>
+          <div class="skills-input-group mt-2">
+            <span class="skill-chip border-accent">Photography</span>
+            <span class="skill-chip border-accent">Music</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer 6: Admin control panel details -->
+      <div id="drawer-admin" class="sidebar-drawer-content hidden">
+        <h2>System Stats</h2>
+        <div class="card panel-info-card">
+          <div class="metric-row">
+            <span>Uptime</span>
+            <strong class="text-success">99.98%</strong>
+          </div>
+          <div class="metric-row mt-2">
+            <span>Active Sockets</span>
+            <strong id="admin-sockets-count">0</strong>
+          </div>
+          <div class="metric-row mt-2">
+            <span>Tunnel Status</span>
+            <strong class="text-success">Live</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer 7: Themes Drawer (Aero Themes Customizer controls) -->
+      <div id="drawer-themes" class="sidebar-drawer-content hidden">
+        <h2>Aero Themes</h2>
+        <div class="card panel-info-card bg-gradient-premium">
+          <label>Aero Themes</label>
+          <p class="small-text mt-1 text-secondary">"Your Space. Your Style."</p>
+        </div>
+        
+        <!-- Live Layout Customizer Options -->
+        <div class="card panel-info-card mt-3">
+          <label>Density</label>
+          <select id="theme-density-select" class="theme-select-input mt-1">
+            <option value="comfortable">Comfortable (Default)</option>
+            <option value="compact">Compact</option>
+            <option value="spacious">Spacious</option>
+          </select>
+        </div>
+
+        <div class="card panel-info-card mt-3">
+          <label>Typography</label>
+          <select id="theme-font-select" class="theme-select-input mt-1">
+            <option value="Inter">Inter</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Manrope">Manrope</option>
+            <option value="SFPro">SF Pro</option>
+            <option value="Roboto">Roboto</option>
+          </select>
+        </div>
+
+        <div class="card panel-info-card mt-3">
+          <label>Border Radius</label>
+          <select id="theme-radius-select" class="theme-select-input mt-1">
+            <option value="rounded">Rounded (12px)</option>
+            <option value="sharp">Sharp (0px)</option>
+            <option value="extra">Extra Rounded (20px)</option>
+            <option value="pill">Pill Style (32px)</option>
+          </select>
+        </div>
+
+        <!-- Custom Theme Creator triggers -->
+        <div class="card panel-info-card mt-3">
+          <label>Theme Creator</label>
+          <p class="small-text text-muted mb-2">Build a customized personal theme color tokens preset.</p>
+          <button class="btn btn-accent w-100 btn-sm-action" id="open-theme-creator-btn">
+            <i data-lucide="plus"></i> Create Theme
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- PANEL 3: MAIN VIEWPORT (RIGHT SIDE) -->
+    <main class="chat-container app-main-viewport">
+      
+      <!-- PANE 1: CHATS (Our existing Webrtc call + chat windows, default, visible) -->
+      <div id="pane-chats" class="viewport-pane">
+        <!-- Default Waiting State (Premium Welcome Screen) -->
+        <div id="chat-blank-state" class="blank-state premium-welcome-pane">
+          <div class="welcome-branding">
+            <i data-lucide="waves" class="logo-icon glow-accent pulsing-logo"></i>
+            <h2>AeroTalk</h2>
+            <p class="tagline">Where Conversations Fly.</p>
+          </div>
+          <div class="quick-actions-grid mt-4">
+            <button class="quick-action-card" id="welcome-chat-btn">
+              <i data-lucide="message-square" class="glow-cyan"></i>
+              <h4>Start New Chat</h4>
+              <p>Find friends and begin streams</p>
+            </button>
+            <button class="quick-action-card" id="welcome-group-btn">
+              <i data-lucide="users" class="glow-purple"></i>
+              <h4>Create Group</h4>
+              <p>Work and coordinate rooms</p>
+            </button>
+            <button class="quick-action-card" id="welcome-feed-btn">
+              <i data-lucide="rss" class="glow-cyan"></i>
+              <h4>Explore Feed</h4>
+              <p>Read fact-checked summaries</p>
+            </button>
+            <button class="quick-action-card" id="welcome-ai-btn">
+              <i data-lucide="bot" class="glow-purple"></i>
+              <h4>Talk to Aero AI</h4>
+              <p>Query details and summary twin</p>
+            </button>
+          </div>
+          <div class="keyboard-shortcuts-helper mt-5">
+            <h5>Keyboard Shortcuts</h5>
+            <div class="shortcuts-row">
+              <span><kbd>Enter</kbd> Send Message</span>
+              <span><kbd>Esc</kbd> Cancel Actions</span>
+              <span><kbd>Ctrl</kbd> + <kbd>F</kbd> Search Directory</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Chat Window -->
+        <div id="chat-active-window" class="chat-window hidden">
+          <div class="chat-window-layout">
+            <div class="chat-main-area">
+              <header class="chat-header">
+                <div class="peer-info">
+                  <div id="chat-avatar" class="avatar glow-accent-border">
+                    <span id="peer-avatar-initial">?</span>
+                    <span id="chat-status-indicator" class="status-indicator"></span>
+                  </div>
+                  <div class="peer-details">
+                    <h3 id="peer-display-name">Connecting...</h3>
+                    <p id="peer-status">Online</p>
+                  </div>
+                </div>
+                <div id="call-actions-header" class="chat-header-actions">
+                  <button id="header-audio-call-btn" class="icon-btn" title="Audio Call">
+                    <i data-lucide="phone"></i>
+                  </button>
+                  <button id="header-video-call-btn" class="icon-btn" title="Video Call">
+                    <i data-lucide="video"></i>
+                  </button>
+                  <button id="header-ai-copilot-btn" class="icon-btn active" title="Toggle AI Copilot">
+                    <i data-lucide="bot"></i>
+                  </button>
+                </div>
+              </header>
+
+              <!-- Message logs -->
+              <div id="chat-messages" class="chat-messages"></div>
+
+              <!-- Typing Indicator -->
+              <div id="typing-indicator" class="typing-indicator-container hidden">
+                <div class="typing-bubble">
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </div>
+
+              <!-- Chat Input Footer -->
+              <footer class="chat-footer">
+                <div id="file-preview-card" class="file-preview-card hidden">
+                  <i data-lucide="file" class="file-icon"></i>
+                  <div class="file-meta">
+                    <div id="file-preview-name" class="file-name">filename.zip</div>
+                    <div class="file-progress-bar"><div id="file-progress-fill" class="progress-fill"></div></div>
+                  </div>
+                  <button id="cancel-upload-btn" class="icon-btn-inline" title="Cancel Upload"><i data-lucide="x" class="small-icon"></i></button>
+                </div>
+
+                <label for="file-input" class="attach-btn" title="Attach File">
+                  <i data-lucide="paperclip"></i>
+                </label>
+                <input type="file" id="file-input" class="hidden">
+                
+                <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+                <button id="send-msg-btn" class="send-btn" title="Send Message"><i data-lucide="send"></i></button>
+              </footer>
+            </div>
+            
+            <!-- AI Copilot Panel drawer (collapsible on right) -->
+            <aside class="chat-ai-panel" id="chat-ai-panel">
+              <header class="ai-panel-header">
+                <i data-lucide="bot" class="glow-accent"></i>
+                <h3>Aero AI Copilot</h3>
+              </header>
+              <div class="ai-panel-body">
+                <button class="ai-action-btn" id="ai-btn-summarize"><i data-lucide="scroll"></i> Summarize chat</button>
+                <button class="ai-action-btn" id="ai-btn-translate"><i data-lucide="languages"></i> Translate to Spanish</button>
+                <button class="ai-action-btn" id="ai-btn-rewrite"><i data-lucide="edit-3"></i> Rewrite reply</button>
+                <button class="ai-action-btn" id="ai-btn-grammar"><i data-lucide="check-square"></i> Fix Grammar</button>
+                <button class="ai-action-btn" id="ai-btn-suggest"><i data-lucide="sparkles"></i> Smart Suggestions</button>
+                
+                <div class="ai-response-box mt-3 hidden" id="ai-response-box">
+                  <label>Copilot response</label>
+                  <p id="ai-response-text">Analyzing context...</p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 2: SOCIAL FEED (Smart Feed, hidden) -->
+      <div id="pane-feed" class="viewport-pane hidden">
+        <div class="feed-main-viewport">
+          
+          <!-- Premium Feed Header -->
+          <header class="feed-premium-header">
+            <div class="feed-greeting-info">
+              <h2 id="feed-personalized-greeting">Good Evening, Explorer 👋</h2>
+              <div class="factcheck-recommendation-banner mt-1">
+                <i data-lucide="bot" class="small-icon glow-cyan"></i>
+                <span>Aero AI verified 12 new posts you will enjoy today.</span>
+              </div>
+            </div>
+            <div class="feed-header-actions-row">
+              <div class="feed-search-bar">
+                <input type="text" id="feed-search-input" placeholder="Search topics, tags...">
+                <i data-lucide="search" class="search-icon"></i>
+              </div>
+              <button id="open-feed-post-modal-btn" class="feed-fab-btn" title="Create Post">
+                <i data-lucide="plus"></i>
+              </button>
+            </div>
+          </header>
+
+          <!-- Horizontal Stories Section -->
+          <div class="stories-horizontal-scroll mb-3">
+            <div class="story-item yours" title="Share a memory">
+              <div class="story-avatar ring-active"><i data-lucide="plus"></i></div>
+              <span>Your Story</span>
+            </div>
+            <div class="story-item" title="Bob's Story">
+              <div class="story-avatar ring-active" style="background-color: var(--primary-color)">B</div>
+              <span>Bob W.</span>
+            </div>
+            <div class="story-item" title="Alice's Story">
+              <div class="story-avatar ring-active" style="background-color: var(--accent-color)">A</div>
+              <span>Alice</span>
+            </div>
+            <div class="story-item" title="Charlie's Story">
+              <div class="story-avatar" style="background-color: #fbbf24">C</div>
+              <span>Charlie</span>
+            </div>
+            <div class="story-item" title="Diana's Story">
+              <div class="story-avatar" style="background-color: #34d399">D</div>
+              <span>Diana</span>
+            </div>
+          </div>
+
+          <!-- Mood Selector Bar -->
+          <div class="mood-selector-bar mb-3">
+            <button class="mood-btn active" data-mood="all"><i data-lucide="smile"></i> All Stories</button>
+            <button class="mood-btn" data-mood="Happy">Happy 😊</button>
+            <button class="mood-btn" data-mood="Motivated">Motivated 🎯</button>
+            <button class="mood-btn" data-mood="Curious">Curious 💡</button>
+            <button class="mood-btn" data-mood="Focused">Focused 🧠</button>
+            <button class="mood-btn" data-mood="Relaxed">Relaxed 🌿</button>
+          </div>
+
+          <!-- Split Social Layout -->
+          <div class="feed-split-layout">
+            <div class="feed-posts-area">
+              <div id="feed-posts" class="feed-posts-list">
+                <!-- Feed cards will render here -->
+                <div class="empty-state">No posts yet. Be the first to share!</div>
+              </div>
+            </div>
+            
+            <!-- Right Feed Sidebar -->
+            <aside class="feed-right-sidebar">
+              <div class="feed-sidebar-card">
+                <h3>Trending Topics</h3>
+                <ul class="trending-list-feed">
+                  <li>
+                    <span class="trend-tag">#AeroTalkUpgrades</span>
+                    <p class="trend-stats">1.2k conversations today</p>
+                  </li>
+                  <li>
+                    <span class="trend-tag">#AITwinsIdentity</span>
+                    <p class="trend-stats">850 active simulations</p>
+                  </li>
+                  <li>
+                    <span class="trend-tag">#PioneerClub</span>
+                    <p class="trend-stats">420 milestone goals completed</p>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="feed-sidebar-card mt-3">
+                <h3>Suggested Creators</h3>
+                <ul id="suggested-creators-list" class="suggested-creators-list">
+                  <li class="creator-suggestion-item">
+                    <div class="creator-details-row">
+                      <div class="avatar" style="background-color: var(--accent-color)">R</div>
+                      <div>
+                        <h4>Ravi Kumar</h4>
+                        <p>@ravi • AI Enthusiast</p>
+                      </div>
+                    </div>
+                    <button class="btn btn-xs btn-outline add-suggested-friend" data-email="ravi@aerotalk.com">Add</button>
+                  </li>
+                  <li class="creator-suggestion-item mt-2">
+                    <div class="creator-details-row">
+                      <div class="avatar" style="background-color: var(--primary-color)">B</div>
+                      <div>
+                        <h4>Bob W.</h4>
+                        <p>@bob • Verified Pioneer</p>
+                      </div>
+                    </div>
+                    <button class="btn btn-xs btn-outline add-suggested-friend" data-email="bob@aerotalk.com">Add</button>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="feed-sidebar-card mt-3">
+                <h3>Recommended Rooms</h3>
+                <ul class="communities-list-sidebar">
+                  <li><i data-lucide="cpu" class="small-icon"></i> AI Pioneers</li>
+                  <li><i data-lucide="rocket" class="small-icon"></i> Launchpad 2026</li>
+                  <li><i data-lucide="music" class="small-icon"></i> Aero Beats</li>
+                </ul>
+              </div>
+              
+              <!-- Floating Aero AI Assistant Widget -->
+              <div class="feed-sidebar-card mt-3 bg-gradient-premium">
+                <div class="ai-widget-header">
+                  <i data-lucide="bot" class="glow-accent"></i>
+                  <h4>Aero AI Assistant</h4>
+                </div>
+                <p class="small-text mt-1 text-secondary">Ask me to summarize trending topics or rewrite posts!</p>
+                <div class="ai-widget-actions mt-2">
+                  <button class="btn btn-xs btn-accent w-100" id="widget-ai-trends-btn">Summarize Trends</button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 3: PROFILE & AI TWIN (Profile Hub, hidden) -->
+      <div id="pane-profile" class="viewport-pane hidden">
+        <div class="profile-layout">
+          
+          <!-- Cover & Info -->
+          <div class="profile-header-card card">
+            <div class="profile-banner-container" id="profile-cover-banner" title="Click to upload Cover banner">
+              <div class="profile-banner-edit-overlay"><i data-lucide="image"></i> Change Banner</div>
+              <input type="file" id="cover-input" accept="image/*" class="hidden">
+            </div>
+            <div class="profile-meta-row">
+              <div class="profile-avatar-container" title="Profile picture">
+                <div id="profile-avatar" class="avatar profile-main-avatar">U</div>
+              </div>
+              <div class="profile-user-info">
+                <h2 id="profile-display-name-tag">Username</h2>
+                <p id="profile-email-tag">email@example.com</p>
+                <div class="profile-badge-badges mt-1">
+                  <span class="badge-tag gold"><i data-lucide="shield-check"></i> Pioneer</span>
+                  <span class="badge-tag cyan"><i data-lucide="check-circle"></i> Verified</span>
+                </div>
+              </div>
+            </div>
+            <div class="profile-details-grid mt-4">
+              <div class="input-group">
+                <label>Personal Bio</label>
+                <p id="profile-bio-text" class="profile-info-paragraph">Exploring AeroTalk...</p>
+                <textarea id="profile-bio-edit" class="hidden text-area-profile"></textarea>
+              </div>
+              <div class="profile-action-row mt-3">
+                <button id="edit-profile-btn" class="btn btn-outline btn-sm-action">Edit Profile</button>
+                <button id="save-profile-btn" class="btn btn-accent btn-sm-action hidden">Save Changes</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline & AI Twin Dual Column -->
+          <div class="profile-columns mt-4">
+            
+            <!-- Column 1: Timeline -->
+            <div class="timeline-column card">
+              <h3>Digital Timeline</h3>
+              <div id="profile-timeline-list" class="timeline-trail mt-3">
+                <div class="timeline-item">
+                  <div class="timeline-bullet"></div>
+                  <div class="timeline-content">
+                    <h4>Joined AeroTalk</h4>
+                    <p>Created secure digital identity on the platform</p>
+                    <span>1/1/2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Column 2: AI Twin Chat Simulator -->
+            <div class="ai-twin-column card">
+              <div class="ai-twin-header">
+                <i data-lucide="bot" class="ai-twin-avatar-icon glow-accent"></i>
+                <div class="ai-twin-title">
+                  <h3>Interactive AI Twin</h3>
+                  <p>Secure companion responding using public profile details.</p>
+                </div>
+              </div>
+              
+              <!-- Conversational Log -->
+              <div id="twin-chat-log" class="twin-chat-messages">
+                <div class="twin-msg bot">Hi! I am the AI Twin of this user. You can ask me about their bio, interests, projects, or credentials.</div>
+              </div>
+
+              <!-- Conversational Input -->
+              <div class="twin-input-row">
+                <input type="text" id="twin-chat-input" placeholder="Ask AI Twin a question...">
+                <button id="twin-chat-send" class="btn btn-accent btn-sm-action"><i data-lucide="send"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 4: DREAM BOARD (Goals & Capsule, hidden) -->
+      <div id="pane-dreams" class="viewport-pane hidden">
+        <div class="dreams-layout">
+          <header class="feed-header-panel">
+            <div class="header-meta">
+              <h2>Dream Board</h2>
+              <p>Write your future goals and create future time capsules.</p>
+            </div>
+          </header>
+
+          <div class="profile-columns mt-3">
+            <!-- Left: Goals tracker -->
+            <div class="card flex-grow flex-grow-card">
+              <div class="section-header-row mb-3">
+                <h3>Milestones Tracker</h3>
+                <button id="add-goal-btn" class="btn btn-accent btn-sm-action"><i data-lucide="plus"></i> Add Goal</button>
+              </div>
+              
+              <!-- Goal Constructor -->
+              <div id="goal-creator-card" class="goal-creator-card hidden mb-3">
+                <div class="input-group">
+                  <label for="new-goal-title">Goal Description</label>
+                  <input type="text" id="new-goal-title" placeholder="Learn Japanese, Lose Weight, Build Startup...">
+                </div>
+                <div class="input-group mt-2">
+                  <label for="new-goal-category">Category</label>
+                  <select id="new-goal-category" class="select-goal-class">
+                    <option value="Education">Education</option>
+                    <option value="Startups">Startups</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Personal Growth">Personal Growth</option>
+                  </select>
+                </div>
+                <button id="save-new-goal" class="btn btn-accent btn-sm-action mt-3">Save Goal</button>
+              </div>
+
+              <div id="dreams-goals-list" class="goals-grid-list">
+                <!-- Goals injected here -->
+                <div class="empty-state">No goals created. Add your first goal above!</div>
+              </div>
+            </div>
+
+            <!-- Right: Time Capsule Creator -->
+            <div class="card time-capsule-creator-card">
+              <h3>Create Time Capsule</h3>
+              <p class="small-text text-muted mb-3">Seal a message in the future. Unlocks on specified date.</p>
+              
+              <div class="input-group">
+                <label for="capsule-message">Time Capsule message</label>
+                <textarea id="capsule-message" placeholder="A message for your future self..." class="text-area-profile"></textarea>
+              </div>
+              <div class="input-group mt-2">
+                <label for="capsule-date">Unlock Date</label>
+                <input type="date" id="capsule-date">
+              </div>
+              <button id="seal-capsule-btn" class="btn btn-primary mt-3 w-100"><i data-lucide="lock"></i> Seal Time Capsule</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 5: SKILL EXCHANGE (Mentor matching, hidden) -->
+      <div id="pane-skills" class="viewport-pane hidden">
+        <div class="skills-layout">
+          <header class="feed-header-panel">
+            <div class="header-meta">
+              <h2>Skill Exchange matchmaking</h2>
+              <p>AI matchmaking compatible learners and mentors dynamically.</p>
+            </div>
+          </header>
+
+          <div class="card mt-3">
+            <h3>Compatible Exchanges Available</h3>
+            <p class="small-text text-muted mb-3">Matches are based on overlap in "I Teach" and "I Want to Learn" profiles.</p>
+            
+            <div id="skills-exchange-list" class="skills-match-grid mt-4">
+              <!-- Matches dynamic injected -->
+              <div class="empty-state">No compatible exchange partners online right now. Add skills in profile to search.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 6: ADMIN PANEL (hidden) -->
+      <div id="pane-admin" class="viewport-pane hidden">
+        <div class="admin-layout">
+          <header class="feed-header-panel">
+            <div class="header-meta">
+              <h2>Admin Control Console</h2>
+              <p>Monitor system sockets, traffic logs, and active connections.</p>
+            </div>
+          </header>
+
+          <div class="profile-columns mt-3">
+            <div class="card flex-grow">
+              <h3>Live Node Connections log</h3>
+              <p class="small-text text-muted mb-2">Real-time socket registrations and disconnect logs.</p>
+              <div class="live-console-box" id="admin-live-logs">
+                <div class="console-line text-muted">[System Info] Socket listener initialized. Listening on port 5000.</div>
+              </div>
+            </div>
+            
+            <div class="card admin-quick-stats">
+              <h3>AeroTalk Analytics</h3>
+              <div class="stat-progress-widget mt-3">
+                <div class="stat-meta">
+                  <span>Server Memory</span>
+                  <strong>48MB / 512MB</strong>
+                </div>
+                <div class="progress-bar-admin"><div class="progress-bar-fill-admin" style="width: 15%"></div></div>
+              </div>
+              <div class="stat-progress-widget mt-3">
+                <div class="stat-meta">
+                  <span>CPU Throughput</span>
+                  <strong>1.2% Load</strong>
+                </div>
+                <div class="progress-bar-admin"><div class="progress-bar-fill-admin" style="width: 5%"></div></div>
+              </div>
+              <div class="stat-progress-widget mt-3">
+                <div class="stat-meta">
+                  <span>Fact Check Queue</span>
+                  <strong>0 pending</strong>
+                </div>
+                <div class="progress-bar-admin"><div class="progress-bar-fill-admin text-success" style="width: 0%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 7: AERO THEMES VIEWPORT (Theme Gallery + Theme Creator) -->
+      <div id="pane-themes" class="viewport-pane hidden">
+        <div class="themes-layout">
+          <header class="feed-header-panel">
+            <div class="header-meta">
+              <h2>Aero Theme Gallery</h2>
+              <p>Browse built-in designs or build custom color configurations.</p>
+            </div>
+            <div class="theme-sharing-actions">
+              <button class="btn btn-outline btn-sm-action" id="theme-export-btn"><i data-lucide="upload"></i> Export</button>
+              <button class="btn btn-outline btn-sm-action" id="theme-import-btn"><i data-lucide="download"></i> Import</button>
+            </div>
+          </header>
+
+          <div class="theme-gallery-split mt-3">
+            
+            <!-- Built-in Themes Gallery Grid -->
+            <div class="theme-gallery-grid-col card flex-grow">
+              <h3>Built-in Premium Gallery</h3>
+              <div class="theme-cards-grid mt-3" id="theme-gallery-grid">
+                <!-- Dynamically injected theme cards -->
+              </div>
+            </div>
+
+            <!-- Custom Creator Inputs Pane -->
+            <div class="theme-customizer-sidebar-col card" id="theme-creator-box">
+              <h3>Live Color Editor</h3>
+              <p class="small-text text-muted mb-3">Adjust specific CSS token variables instantly.</p>
+              
+              <div class="color-picker-group">
+                <div class="color-picker-item">
+                  <label for="cp-bg">Background</label>
+                  <input type="color" id="cp-bg" value="#0b0c10">
+                </div>
+                <div class="color-picker-item">
+                  <label for="cp-panel">Cards / Panels</label>
+                  <input type="color" id="cp-panel" value="#151721">
+                </div>
+                <div class="color-picker-item">
+                  <label for="cp-accent">Accent Glow</label>
+                  <input type="color" id="cp-accent" value="#00ffd2">
+                </div>
+                <div class="color-picker-item">
+                  <label for="cp-primary">Primary Branding</label>
+                  <input type="color" id="cp-primary" value="#8a2be2">
+                </div>
+                <div class="color-picker-item">
+                  <label for="cp-text">Primary Text</label>
+                  <input type="color" id="cp-text" value="#f5f6f8">
+                </div>
+              </div>
+
+              <div class="creator-name-group mt-3">
+                <label for="custom-theme-name">Save Theme Preset</label>
+                <div class="input-row mt-1">
+                  <input type="text" id="custom-theme-name" placeholder="Theme name..." style="font-size: 0.8rem;">
+                  <button class="btn btn-accent btn-sm-action" id="save-custom-theme-btn" style="padding: 6px 12px;">Save</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- POPUP MODALS -->
+
+    <!-- Create Group Modal -->
+    <div id="group-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <header class="modal-header">
+          <h3>Create New Group</h3>
+          <button id="close-group-modal" class="icon-btn-inline"><i data-lucide="x"></i></button>
+        </header>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="group-name-input">Group Name</label>
+            <input type="text" id="group-name-input" placeholder="Enter group name...">
+          </div>
+          <div class="group-select-members">
+            <label>Select Friends to Add</label>
+            <ul id="group-members-list" class="members-checklist">
+              <!-- Checklist of friends -->
+            </ul>
+          </div>
+          <button id="create-group-submit" class="btn btn-accent">Create Group</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div id="post-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <header class="modal-header">
+          <h3>Create New Feed Post</h3>
+          <button id="close-post-modal" class="icon-btn-inline"><i data-lucide="x"></i></button>
+        </header>
+        <div class="modal-body">
+          <div class="post-image-picker">
+            <label for="post-image-input" class="post-image-label">
+              <i data-lucide="image" class="large-icon"></i>
+              <span id="post-image-status">Select Photo</span>
+            </label>
+            <input type="file" id="post-image-input" accept="image/*" class="hidden">
+          </div>
+          <div class="input-group">
+            <label for="post-caption-input">Caption</label>
+            <input type="text" id="post-caption-input" placeholder="What's on your mind?">
+          </div>
+          <button id="create-post-submit" class="btn btn-accent">Publish Post</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALL OVERLAYS -->
+    <div id="call-overlay" class="call-overlay hidden">
+      <div class="video-grid">
+        <video id="remote-video" autoplay playsinline class="remote-video"></video>
+        <audio id="remote-audio" autoplay></audio>
+        <div id="video-placeholder" class="video-placeholder">
+          <div class="avatar large-avatar pulsing">
+            <span id="call-avatar-initial">P</span>
+          </div>
+          <div class="call-label" id="call-status-label">Calling...</div>
+        </div>
+      </div>
+
+      <!-- Local PIP Video -->
+      <div id="local-video-container" class="local-video-container hidden">
+        <video id="local-video" autoplay playsinline muted class="local-video"></video>
+      </div>
+
+      <!-- Outgoing Call UI -->
+      <div id="outgoing-call-ui" class="call-card hidden">
+        <div class="call-details">
+          <h2 id="outgoing-name">Calling</h2>
+          <p>Initiating secure stream...</p>
+        </div>
+        <button id="cancel-call-btn" class="btn-circle btn-danger" title="Cancel Call">
+          <i data-lucide="phone-off"></i>
+        </button>
+      </div>
+
+      <!-- Incoming Call UI -->
+      <div id="incoming-call-ui" class="call-card incoming-card hidden">
+        <div class="incoming-header">
+          <i data-lucide="phone-call" class="incoming-icon pulsing"></i>
+          <h2>Incoming Call</h2>
+        </div>
+        <p><strong id="incoming-caller-name">Someone</strong> is calling you.</p>
+        <div class="incoming-action-buttons">
+          <button id="decline-call-btn" class="btn-circle btn-danger" title="Decline Call">
+            <i data-lucide="phone-off"></i>
+          </button>
+          <button id="accept-audio-call-btn" class="btn-circle btn-success" title="Accept Audio">
+            <i data-lucide="phone"></i>
+          </button>
+          <button id="accept-video-call-btn" class="btn-circle btn-accent" title="Accept Video">
+            <i data-lucide="video"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Call Panel Controls -->
+      <div id="active-call-controls" class="active-call-controls hidden">
+        <div class="control-row">
+          <button id="toggle-mic-btn" class="btn-circle btn-control" title="Toggle Microphone">
+            <i data-lucide="mic"></i>
+          </button>
+          <button id="toggle-cam-btn" class="btn-circle btn-control" title="Toggle Camera">
+            <i data-lucide="video"></i>
+          </button>
+          <button id="share-screen-btn" class="btn-circle btn-control" title="Share Screen">
+            <i data-lucide="monitor"></i>
+          </button>
+          <button id="hangup-btn" class="btn-circle btn-danger" title="End Call">
+            <i data-lucide="phone-off"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "50c9d75f-b018-45b4-bcd2-aab283da7a7b",
+    "username": "ravi2",
+    "displayName": "ravi2",
+    "email": "ravi2@gmail.com",
+    "passwordHash": "$2a$10$ayEEYBKSPwdLQ5Yt6ZPfTuHUvTL/l5eB6WgtvacH4y1AUUSUPImNi",
+    "profilePhoto": "",
+    "bio": "New explorer on AeroTalk. Conversations that go beyond.",
+    "theme": "Aero Dark",
+    "language": "English",
+    "onlineStatus": "offline",
+    "verified": false,
+    "reputation": 0,
+    "followers": [],
+    "following": [],
+    "friends": [],
+    "blockedUsers": [],
+    "savedPosts": [],
+    "likedPosts": [],
+    "bookmarks": [],
+    "notifications": [],
+    "settings": {
+      "theme": "Aero Dark",
+      "appearance": "Dark",
+      "fontSize": "Medium",
+      "sidebar": "Expanded",
+      "animations": true,
+      "privacy": "Friends"
+    },
+    "createdAt": "2026-07-01T14:33:19.478Z",
+    "updatedAt": "2026-07-01T14:33:19.478Z"
+  }
+]

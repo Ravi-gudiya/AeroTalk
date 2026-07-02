@@ -1,0 +1,34 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Configuration Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Production Build Folders
+dist/
+build/
+.cache/
+
+# System / IDE Files
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Local fallback databases & temp files
+backend/data.json
+backend/data.json.tmp
+backend/data.json.bak
+*.log
+*.tmp
