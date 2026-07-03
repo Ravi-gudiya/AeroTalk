@@ -509,148 +509,115 @@ function renderFeed(posts) {
     greetingEl.textContent = `${greet}, ${currentUser.username || 'Explorer'} 👋`;
   }
 
-  feedPosts.innerHTML = '';
-  if (posts.length === 0) {
-    feedPosts.innerHTML = `<div class="empty-state">No posts yet. Be the first to share!</div>`;
-    return;
+  // 1. Friends Updates
+  const friendsEl = document.getElementById('universe-friends-updates');
+  if (friendsEl) {
+    if (posts.length === 0) {
+      friendsEl.innerHTML = `
+        <div style="border-left: 3px solid var(--accent-color); padding-left: 8px; margin-bottom: 8px;">
+          <strong>Ravi Kumar</strong> shared a coding setup update.
+        </div>
+        <div style="border-left: 3px solid var(--secondary-color); padding-left: 8px;">
+          <strong>Anjali</strong> finished studying UI templates.
+        </div>
+      `;
+    } else {
+      friendsEl.innerHTML = posts.slice(0, 3).map(p => `
+        <div style="border-left: 3px solid var(--primary-color); padding-left: 8px; margin-bottom: 8px;">
+          <strong>${escapeHTML(p.username)}</strong>: ${escapeHTML(p.caption || 'Broadcast a vibe')}
+        </div>
+      `).join('');
+    }
   }
 
-  posts.forEach(post => {
-    const card = document.createElement('div');
-    card.className = 'feed-card entrance-anim';
+  // 2. Trending Topics
+  const trendingEl = document.getElementById('universe-trending-topics');
+  if (trendingEl) {
+    trendingEl.innerHTML = `
+      <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+        <li><strong style="color: var(--accent-color);">#LifeOperatingSystem</strong> <span style="font-size: 0.7rem; color: var(--text-muted); float: right;">1.5k active</span></li>
+        <li><strong style="color: var(--secondary-color);">#AeroMindAI</strong> <span style="font-size: 0.7rem; color: var(--text-muted); float: right;">940 active</span></li>
+        <li><strong style="color: var(--primary-color);">#NothingTheme</strong> <span style="font-size: 0.7rem; color: var(--text-muted); float: right;">512 active</span></li>
+      </ul>
+    `;
+  }
 
-    const timeFormatted = new Date(post.timestamp).toLocaleString();
-    
-    // DP render for post author
-    const hasAvatarImg = post.avatarUrl ? `style="background-image: url(${post.avatarUrl}); background-color: transparent" class="avatar has-image"` : `style="background-color: var(--primary-color)" class="avatar"`;
-    const avatarContent = post.avatarUrl ? '' : post.username.charAt(0).toUpperCase();
-
-    // AI Fact check simulation
-    const confidence = post.confidence || Math.floor(Math.random() * 15) + 85;
-    const isReliable = confidence >= 90;
-    const badgeClass = isReliable ? 'high' : 'warn';
-    const badgeText = isReliable ? `${confidence}% Verified` : `${confidence}% Low Trust`;
-
-    card.innerHTML = `
-      <div class="feed-header">
-        <div class="feed-header-left">
-          <div ${hasAvatarImg}>${avatarContent}</div>
-          <div class="feed-user-details">
-            <h4 style="display: flex; align-items: center; gap: 8px;">
-              ${escapeHTML(post.username)}
-              <span class="fact-check-badge ${badgeClass}" title="AI Fact Check Score"><i data-lucide="shield-check"></i> ${badgeText}</span>
-            </h4>
-            <span>${timeFormatted}</span>
-          </div>
-        </div>
-        <div class="feed-header-right">
-          <button class="btn-follow-creator">Follow</button>
-          <button class="icon-btn-inline hover-scale" title="More options"><i data-lucide="more-horizontal"></i></button>
-        </div>
+  // 3. Campus & Nearby
+  const campusEl = document.getElementById('universe-campus-updates');
+  if (campusEl) {
+    campusEl.innerHTML = `
+      <div style="margin-bottom: 8px;">
+        <strong>Campus Hackathon 2026</strong>
+        <p style="margin: 2px 0; font-size: 0.72rem; color: var(--text-muted);">Begins tomorrow in the Computer Science Hub.</p>
       </div>
-      
-      ${post.caption ? `<div class="feed-caption">${escapeHTML(post.caption)}</div>` : ''}
-      
-      <div class="feed-image-container">
-        <img src="${post.imageUrl}" class="feed-image" alt="Feed image" loading="lazy">
+      <div>
+        <strong>Aero Beats Live</strong>
+        <p style="margin: 2px 0; font-size: 0.72rem; color: var(--text-muted);">Spontaneous concert in the main quad at 9:00 PM.</p>
       </div>
-      
-      <!-- Reactions row -->
-      <div class="feed-actions-row">
-        <button class="reaction-btn" data-reaction="inspired"><i data-lucide="sparkles"></i> Inspired (0)</button>
-        <button class="reaction-btn" data-reaction="learned"><i data-lucide="book-open"></i> Learned (0)</button>
-        <button class="reaction-btn" data-reaction="relate"><i data-lucide="heart"></i> Relatable (0)</button>
-        <button class="reaction-share-btn" title="Share Post"><i data-lucide="share-2"></i> Share</button>
-      </div>
+    `;
+  }
 
-      <!-- Post Aero AI Feature Panel -->
-      <div class="post-ai-panel-wrapper mt-2">
-        <div class="post-ai-actions-row">
-          <button class="post-ai-pill btn-ai-sum" data-action="sum"><i data-lucide="scroll"></i> Summarize</button>
-          <button class="post-ai-pill btn-ai-fact" data-action="fact"><i data-lucide="shield-alert"></i> Fact Check</button>
-          <button class="post-ai-pill btn-ai-trans" data-action="trans"><i data-lucide="languages"></i> Translate</button>
-          <button class="post-ai-pill btn-ai-reply" data-action="reply"><i data-lucide="message-square"></i> Draft Reply</button>
-        </div>
-        <div class="post-ai-explanation hidden" id="post-ai-exp-${post.id}">
-          <div class="ai-explanation-header">
-            <i data-lucide="bot" class="glow-cyan small-icon"></i>
-            <span>Aero AI insights</span>
-          </div>
-          <p class="ai-explanation-text">Analyzing...</p>
+  // 4. Creator Highlights
+  const creatorEl = document.getElementById('universe-creator-highlights');
+  if (creatorEl) {
+    creatorEl.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <span><strong>@cosmic_designer</strong></span>
+        <button class="btn btn-xs btn-outline" style="padding: 2px 6px; font-size: 0.65rem;">Follow</button>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span><strong>@webrtc_guru</strong></span>
+        <button class="btn btn-xs btn-outline" style="padding: 2px 6px; font-size: 0.65rem;">Follow</button>
+      </div>
+    `;
+  }
+
+  // 5. Gaming & Esports
+  const gamingEl = document.getElementById('universe-gaming-events');
+  if (gamingEl) {
+    gamingEl.innerHTML = `
+      <div style="border: 1px solid var(--panel-border); border-radius: 8px; padding: 8px; background: rgba(255,255,255,0.01);">
+        <strong>Apex Legends Arena Match</strong>
+        <p style="margin: 2px 0; font-size: 0.72rem; color: var(--accent-color);">Live streams active: 4 nodes playing.</p>
+      </div>
+    `;
+  }
+
+  // 6. Tech & Startup News
+  const startupEl = document.getElementById('universe-startup-news');
+  if (startupEl) {
+    startupEl.innerHTML = `
+      <div style="border-left: 2px solid var(--secondary-color); padding-left: 8px;">
+        <strong>VisionOS 3 released</strong>
+        <p style="margin: 2px 0 0 0; font-size: 0.72rem; color: var(--text-muted);">Apple announces deep webRTC overlay bindings for real-time remote rendering.</p>
+      </div>
+    `;
+  }
+
+  // 7. New Music & Movies
+  const musicEl = document.getElementById('universe-music-releases');
+  if (musicEl) {
+    musicEl.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff;">S</div>
+        <div>
+          <strong style="font-size: 0.75rem;">Starlight Synapses</strong>
+          <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">Nebula Waves • Album Drop</p>
         </div>
       </div>
     `;
+  }
 
-    // Bind reaction clicks
-    card.querySelectorAll('.reaction-btn').forEach(btn => {
-      let count = 0;
-      let active = false;
-      const type = btn.getAttribute('data-reaction');
-      
-      btn.addEventListener('click', () => {
-        active = !active;
-        count = active ? count + 1 : count - 1;
-        btn.classList.toggle('active', active);
-        
-        let label = '';
-        if (type === 'inspired') label = `Inspired (${count})`;
-        else if (type === 'learned') label = `Learned (${count})`;
-        else if (type === 'relate') label = `Relatable (${count})`;
-        
-        btn.innerHTML = `${active ? '<i data-lucide="check"></i>' : ''} ${label}`;
-        window.lucide.createIcons();
-      });
-    });
+  // 8. Community Recommendations
+  const recommendEl = document.getElementById('universe-community-recommendations');
+  if (recommendEl) {
+    recommendEl.innerHTML = `
+      <div style="font-size: 0.75rem; line-height: 1.4;">
+        AeroMind analyzed your study patterns and recommends joining <strong style="color: var(--secondary-color);">Coding Space</strong> or pinning the <strong style="color: var(--accent-color);">#NothingTheme</strong> tag.
+      </div>
+    `;
+  }
 
-    // Double click image to inspire
-    const img = card.querySelector('.feed-image');
-    if (img) {
-      img.addEventListener('dblclick', () => {
-        const inspireBtn = card.querySelector('.reaction-btn[data-reaction="inspired"]');
-        if (inspireBtn) inspireBtn.click();
-      });
-    }
-
-    // Follow button click
-    const followBtn = card.querySelector('.btn-follow-creator');
-    if (followBtn) {
-      followBtn.addEventListener('click', () => {
-        followBtn.classList.toggle('following');
-        followBtn.textContent = followBtn.classList.contains('following') ? 'Following' : 'Follow';
-      });
-    }
-
-    // Bind Post AI Action buttons
-    const aiExpPanel = card.querySelector(`#post-ai-exp-${post.id}`);
-    const aiExpText = card.querySelector('.ai-explanation-text');
-    
-    card.querySelectorAll('.post-ai-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const act = btn.getAttribute('data-action');
-        card.querySelectorAll('.post-ai-pill').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-
-        aiExpPanel.classList.remove('hidden');
-
-        let textVal = "";
-        const captionClean = post.caption || "AeroTalk Story";
-        if (act === 'sum') {
-          textVal = `[AI Summary] This feed entry details a visual capture titled "${captionClean}" shared by ${post.username}. It highlights community engagement with a fact-checked confidence rating of ${confidence}%.`;
-        } else if (act === 'fact') {
-          textVal = `[AI Fact Check] Confidence Score: ${confidence}%. The content regarding "${captionClean}" is verified to be accurate according to database schemas and community reviews.`;
-        } else if (act === 'trans') {
-          textVal = `[AI Translation - Spanish] "${captionClean}" translates to: "¡Miren esta increíble actualización compartida hoy en AeroTalk!"`;
-        } else if (act === 'reply') {
-          textVal = `[AI Cues for draft Reply] 1. "That's super inspiring, ${post.username}! Love the vibe." • 2. "Great update, let's connect in a group call!"`;
-        }
-
-        aiExpText.textContent = textVal;
-        window.lucide.createIcons();
-      });
-    });
-
-    feedPosts.appendChild(card);
-  });
   window.lucide.createIcons();
 }
 
@@ -2111,21 +2078,19 @@ function setupUIEvents() {
 
   // Dock Buttons (Far-Left Dock routing panels)
   const dockChats = document.getElementById('dock-chats-btn');
-  const dockFeed = document.getElementById('dock-feed-btn');
+  const dockHome = document.getElementById('dock-home-btn');
   const dockProfile = document.getElementById('dock-profile-btn');
   const dockDreams = document.getElementById('dock-dreams-btn');
-  const dockSkills = document.getElementById('dock-skills-btn');
-  const dockThemes = document.getElementById('dock-themes-btn');
+  const dockVibe = document.getElementById('dock-vibe-btn');
   const dockAdmin = document.getElementById('dock-admin-btn');
   const dockPulse = document.getElementById('dock-pulse-btn');
   const dockAihub = document.getElementById('dock-aihub-btn');
 
   if (dockChats) dockChats.addEventListener('click', () => switchDockTab('chats'));
-  if (dockFeed) dockFeed.addEventListener('click', () => switchDockTab('feed'));
+  if (dockHome) dockHome.addEventListener('click', () => switchDockTab('feed'));
   if (dockProfile) dockProfile.addEventListener('click', () => switchDockTab('profile'));
   if (dockDreams) dockDreams.addEventListener('click', () => switchDockTab('dreams'));
-  if (dockSkills) dockSkills.addEventListener('click', () => switchDockTab('skills'));
-  if (dockThemes) dockThemes.addEventListener('click', () => switchDockTab('themes'));
+  if (dockVibe) dockVibe.addEventListener('click', () => switchDockTab('skills'));
   if (dockAdmin) dockAdmin.addEventListener('click', () => switchDockTab('admin'));
   if (dockPulse) dockPulse.addEventListener('click', () => switchDockTab('pulse'));
   if (dockAihub) dockAihub.addEventListener('click', () => switchDockTab('aihub'));
@@ -2279,12 +2244,8 @@ function setupUIEvents() {
     });
   }
 
-  // 2. Extra navigation buttons (Home & Privacy)
-  const dockHome = document.getElementById('dock-home-btn');
+  // 2. Extra navigation buttons (Privacy)
   const dockPrivacy = document.getElementById('dock-privacy-btn');
-  if (dockHome) {
-    dockHome.addEventListener('click', () => switchDockTab('chats'));
-  }
   if (dockPrivacy) {
     dockPrivacy.addEventListener('click', () => {
       alert("AeroTalk Privacy Engine is Active.\n\nAll WebRTC HD calling data is routed directly Peer-to-Peer using secure WebSockets signaling. Text messages and credentials are fully encrypted in DB transactions.");
@@ -2720,13 +2681,15 @@ function switchDockTab(tabId) {
 
   if (tabId === 'feed') {
     fetchFeed();
-    fetchMoments(); // Refresh 24h moments at the top of feed
+    fetchMoments();
   } else if (tabId === 'profile') {
     renderMainProfile();
   } else if (tabId === 'dreams') {
-    fetchGoalsAndCapsules();
+    renderQuests();
   } else if (tabId === 'skills') {
-    renderSkillExchangeMatches();
+    renderSpaces();
+  } else if (tabId === 'pulse') {
+    renderPulse();
   } else if (tabId === 'admin') {
     refreshAdminConsole();
     renderThemeGallery(); // Consolidated Theme Customizer initialization!
@@ -3543,6 +3506,31 @@ function setupThemeCreatorAndCustomizers() {
       pendingReqModal.classList.add('hidden');
     });
   }
+
+  // --- Life OS Dashboard Quick Create Button Bindings ---
+  const qVibe = document.getElementById('quick-vibe-btn');
+  const qSpace = document.getElementById('quick-space-btn');
+  const qEvent = document.getElementById('quick-event-btn');
+  const qPoll = document.getElementById('quick-poll-btn');
+  const qStory = document.getElementById('quick-story-btn');
+
+  if (qVibe) qVibe.addEventListener('click', () => switchDockTab('vibe'));
+  if (qStory) qStory.addEventListener('click', () => switchDockTab('vibe'));
+  if (qSpace) qSpace.addEventListener('click', () => switchDockTab('skills'));
+  
+  if (qEvent) {
+    qEvent.addEventListener('click', () => {
+      const desc = prompt("Plan an Event (AeroMind Scheduling):\n\nEnter event description, time, and location:");
+      if (desc) alert(`AeroMind scheduled your event: "${desc}" and broadcasted invitation to all online friends.`);
+    });
+  }
+
+  if (qPoll) {
+    qPoll.addEventListener('click', () => {
+      const question = prompt("Create a Poll (Spaces Community Feed):\n\nEnter your poll question:");
+      if (question) alert(`Created poll: "${question}" in your active Spaces circles.`);
+    });
+  }
 }
 
 // Fetch and render unexpired 24h PWA moments
@@ -3643,4 +3631,157 @@ function showInAppToast(sender, text) {
       toast.remove();
     }, 300);
   }, 4000);
+}
+
+// --- Gen Z Life OS Dashboard Integrations ---
+
+function renderPulse() {
+  const listEl = document.getElementById('pulse-activities-list');
+  if (!listEl) return;
+  
+  const activities = [
+    { user: "Ravi Kumar", action: "is coding on AeroTalk OS", icon: "💻", time: "Just now" },
+    { user: "Anjali", action: "started studying web templates", icon: "📚", time: "2m ago" },
+    { user: "Rahul", action: "joined Gaming Space match", icon: "🎮", time: "5m ago" },
+    { user: "Priya", action: "is listening to Starlight Synapses", icon: "🎵", time: "10m ago" },
+    { user: "Suresh", action: "is travelling to Delhi", icon: "✈️", time: "1h ago" },
+    { user: "Harsha", action: "completed today's Quest challenge", icon: "✅", time: "2h ago" }
+  ];
+
+  listEl.innerHTML = activities.map(act => `
+    <div class="pulse-activity-card">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="pulse-glow-dot"></div>
+        <div>
+          <strong style="color: #fff; font-size: 0.85rem;">${act.user}</strong>
+          <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 4px;">${act.action}</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+        <span>${act.icon}</span>
+        <span style="font-size: 0.7rem; color: var(--text-muted);">${act.time}</span>
+      </div>
+    </div>
+  `).join('');
+  window.lucide.createIcons();
+}
+
+let questsCompleted = [false, false, false, false, false, false];
+let dailyXPVal = 125;
+
+function renderQuests() {
+  const listEl = document.getElementById('quest-challenges-list');
+  if (!listEl) return;
+
+  const challenges = [
+    { text: "Meet one new person", xp: 25 },
+    { text: "Join one Spaces community", xp: 25 },
+    { text: "Create one Vibe status", xp: 25 },
+    { text: "Complete identity details", xp: 25 },
+    { text: "Attend one live classroom room", xp: 25 },
+    { text: "Upload one Moment story", xp: 25 }
+  ];
+
+  listEl.innerHTML = challenges.map((ch, idx) => `
+    <div class="quest-item ${questsCompleted[idx] ? 'completed' : ''}" data-idx="${idx}">
+      <input type="checkbox" ${questsCompleted[idx] ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
+      <span style="font-size: 0.85rem; color: #fff;">${ch.text}</span>
+      <span style="margin-left: auto; font-size: 0.72rem; color: var(--secondary-color); font-weight: 700;">+${ch.xp} XP</span>
+    </div>
+  `).join('');
+
+  // Bind checks
+  listEl.querySelectorAll('.quest-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      const checkbox = item.querySelector('input');
+      checkbox.checked = !checkbox.checked;
+      triggerQuestToggle(item, checkbox);
+    });
+    const cb = item.querySelector('input');
+    cb.addEventListener('change', () => {
+      triggerQuestToggle(item, cb);
+    });
+  });
+
+  updateQuestProgressionRing();
+}
+
+function triggerQuestToggle(item, checkbox) {
+  const idx = parseInt(item.getAttribute('data-idx'));
+  questsCompleted[idx] = checkbox.checked;
+  item.classList.toggle('completed', checkbox.checked);
+
+  if (checkbox.checked) {
+    dailyXPVal += 25;
+  } else {
+    dailyXPVal -= 25;
+  }
+  
+  document.getElementById('quest-xp-value').textContent = `${dailyXPVal} XP`;
+  updateQuestProgressionRing();
+}
+
+function updateQuestProgressionRing() {
+  const completedCount = questsCompleted.filter(c => c).length;
+  const total = questsCompleted.length;
+  const percentage = completedCount / total;
+  
+  const offset = 364.4 - (364.4 * percentage);
+  const circle = document.getElementById('quest-progress-svg');
+  if (circle) circle.style.strokeDashoffset = offset;
+}
+
+let spacesTimerInterval = null;
+
+function renderSpaces() {
+  const gridEl = document.getElementById('spaces-grid');
+  if (!gridEl) return;
+
+  const spaces = [
+    { name: "Gaming & Esports Space", desc: "CS:GO 2 college finals stream event. Join now!", timer: 3200, icon: "gamepad-2", members: 14, color: "var(--accent-color)" },
+    { name: "CS Hackathon Space", desc: "Collaborate and brainstorm project ideas with AI.", timer: 7200, icon: "rocket", members: 42, color: "var(--secondary-color)" },
+    { name: "College Beats Space", desc: "Acoustic song releasing live room setup.", timer: 12000, icon: "music", members: 9, color: "var(--primary-color)" },
+    { name: "Coding Arena Space", desc: "P2P live coding speedrun challenge.", timer: 500, icon: "cpu", members: 28, color: "var(--accent-color)" }
+  ];
+
+  if (spacesTimerInterval) clearInterval(spacesTimerInterval);
+
+  function drawGrid() {
+    gridEl.innerHTML = spaces.map(sp => {
+      const hours = Math.floor(sp.timer / 3600);
+      const mins = Math.floor((sp.timer % 3600) / 60);
+      const secs = sp.timer % 60;
+      const timeStr = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+      return `
+        <div class="card glow-card hover-glow" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--panel-border); font-family: monospace; color: var(--accent-color); font-weight: 700;">Expires: ${timeStr}</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);"><i data-lucide="users" style="width: 12px; vertical-align: middle;"></i> ${sp.members} online</span>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin: 8px 0 4px 0; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="${sp.icon}" style="color: ${sp.color}; width: 16px;"></i> ${sp.name}
+            </h3>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.4;">${sp.desc}</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-accent btn-xs" style="flex-grow: 1; padding: 8px; border-radius: 8px;">Enter Space</button>
+            <button class="btn btn-outline btn-xs" style="padding: 8px; border-radius: 8px;"><i data-lucide="volume-2" style="width: 14px;"></i></button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    window.lucide.createIcons();
+  }
+
+  drawGrid();
+
+  spacesTimerInterval = setInterval(() => {
+    spaces.forEach(sp => {
+      if (sp.timer > 0) sp.timer--;
+    });
+    drawGrid();
+  }, 1000);
 }

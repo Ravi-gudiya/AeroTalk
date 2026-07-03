@@ -163,29 +163,33 @@
       <nav class="sidebar-navigation-items">
         <button class="nav-item-btn active" id="dock-home-btn" title="Universe Feed">
           <i data-lucide="home"></i>
-          <span class="nav-label">Home</span>
+          <span class="nav-label">Universe</span>
         </button>
-        <button class="nav-item-btn" id="dock-vibe-btn" title="Vibes Upload">
-          <i data-lucide="aperture"></i>
-          <span class="nav-label">Vibe</span>
+        <button class="nav-item-btn" id="dock-pulse-btn" title="Real-time Activity">
+          <i data-lucide="zap"></i>
+          <span class="nav-label">Pulse</span>
+        </button>
+        <button class="nav-item-btn" id="dock-dreams-btn" title="Daily Challenges">
+          <i data-lucide="target"></i>
+          <span class="nav-label">Quest</span>
+        </button>
+        <button class="nav-item-btn" id="dock-vibe-btn" title="Temporary Spaces">
+          <i data-lucide="layers"></i>
+          <span class="nav-label">Spaces</span>
         </button>
         <button class="nav-item-btn" id="dock-chats-btn" title="Messenger Hub">
           <i data-lucide="message-square"></i>
           <span class="nav-label">Chat</span>
         </button>
-        <button class="nav-item-btn" id="dock-dreams-btn" title="Circles & Rooms">
-          <i data-lucide="layers"></i>
-          <span class="nav-label">Circles</span>
-        </button>
-        <button class="nav-item-btn" id="dock-pulse-btn" title="Pulse Analytics">
-          <i data-lucide="zap"></i>
-          <span class="nav-label">Pulse</span>
-        </button>
-        <button class="nav-item-btn" id="dock-profile-btn" title="Digital Identity">
+        <button class="nav-item-btn" id="dock-profile-btn" title="Digital Life Card">
           <i data-lucide="user"></i>
-          <span class="nav-label">Profile</span>
+          <span class="nav-label">Identity</span>
         </button>
-        <button class="nav-item-btn" id="dock-admin-btn" title="Workspace Settings">
+        <button class="nav-item-btn" id="dock-aihub-btn" title="AeroMind Assistant">
+          <i data-lucide="bot"></i>
+          <span class="nav-label">AeroMind</span>
+        </button>
+        <button class="nav-item-btn" id="dock-admin-btn" title="Settings Console">
           <i data-lucide="settings"></i>
           <span class="nav-label">Settings</span>
         </button>
@@ -487,41 +491,85 @@
       <!-- PANE 1: CHATS (Our existing Webrtc call + chat windows, default, visible) -->
       <div id="pane-chats" class="viewport-pane">
         <!-- Default Waiting State (Premium Welcome Screen) -->
-        <div id="chat-blank-state" class="blank-state premium-welcome-pane">
-          <div class="welcome-branding">
-            <i data-lucide="waves" class="logo-icon glow-accent pulsing-logo"></i>
-            <h2>AeroTalk</h2>
-            <p class="tagline">Where Conversations Fly.</p>
-          </div>
-          <div class="quick-actions-grid mt-4">
-            <button class="quick-action-card" id="welcome-chat-btn">
-              <i data-lucide="message-square" class="glow-cyan"></i>
-              <h4>Start New Chat</h4>
-              <p>Find friends and begin streams</p>
-            </button>
-            <button class="quick-action-card" id="welcome-group-btn">
-              <i data-lucide="users" class="glow-purple"></i>
-              <h4>Create Group</h4>
-              <p>Work and coordinate rooms</p>
-            </button>
-            <button class="quick-action-card" id="welcome-feed-btn">
-              <i data-lucide="rss" class="glow-cyan"></i>
-              <h4>Explore Feed</h4>
-              <p>Read fact-checked summaries</p>
-            </button>
-            <button class="quick-action-card" id="welcome-ai-btn">
-              <i data-lucide="bot" class="glow-purple"></i>
-              <h4>Talk to Aero AI</h4>
-              <p>Query details and summary twin</p>
-            </button>
-          </div>
-          <div class="keyboard-shortcuts-helper mt-5">
-            <h5>Keyboard Shortcuts</h5>
-            <div class="shortcuts-row">
-              <span><kbd>Enter</kbd> Send Message</span>
-              <span><kbd>Esc</kbd> Cancel Actions</span>
-              <span><kbd>Ctrl</kbd> + <kbd>F</kbd> Search Directory</span>
+        <!-- PANE 1: CHATS (Default waiting state is now the Gen Z Life Dashboard!) -->
+        <div id="chat-blank-state" class="blank-state premium-welcome-pane" style="height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 24px; text-align: left;">
+          
+          <div class="welcome-branding" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <i data-lucide="waves" class="logo-icon glow-accent" style="width: 32px; height: 32px;"></i>
+              <div>
+                <h2 style="margin: 0; font-size: 1.4rem;">Life OS Dashboard</h2>
+                <p style="margin: 2px 0 0 0; font-size: 0.72rem; color: var(--text-secondary);">Your AI-powered daily navigation console</p>
+              </div>
             </div>
+            <div id="dashboard-weather-widget" style="font-size: 0.78rem; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="cloud-lightning" style="color: var(--secondary-color)"></i> <span>24°C • Cosmic Storms</span>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="quick-create-actions-row mt-3" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; scrollbar-width: none;">
+            <button class="btn btn-outline btn-xs" id="quick-vibe-btn" style="padding: 10px 14px; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; border-radius: 12px;"><i data-lucide="aperture" style="width: 14px;"></i> Vibe</button>
+            <button class="btn btn-outline btn-xs" id="quick-space-btn" style="padding: 10px 14px; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; border-radius: 12px;"><i data-lucide="layers" style="width: 14px;"></i> Space</button>
+            <button class="btn btn-outline btn-xs" id="quick-event-btn" style="padding: 10px 14px; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; border-radius: 12px;"><i data-lucide="calendar" style="width: 14px;"></i> Event</button>
+            <button class="btn btn-outline btn-xs" id="quick-poll-btn" style="padding: 10px 14px; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; border-radius: 12px;"><i data-lucide="bar-chart-2" style="width: 14px;"></i> Poll</button>
+            <button class="btn btn-outline btn-xs" id="quick-story-btn" style="padding: 10px 14px; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; border-radius: 12px;"><i data-lucide="plus-circle" style="width: 14px;"></i> Story</button>
+          </div>
+
+          <!-- Widgets Grid -->
+          <div class="widgets-grid mt-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; flex-grow: 1; width: 100%;">
+            
+            <!-- Today's Mood & Aura -->
+            <div class="card" style="padding: 16px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="smile" style="color: var(--secondary-color)"></i> Mood & Aura</h4>
+              <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-color);">Cosmic Purple</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">Energy status matches studious and highly focused nodes.</div>
+            </div>
+
+            <!-- Current XP & Quest -->
+            <div class="card" style="padding: 16px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="target" style="color: var(--accent-color)"></i> Daily Quest</h4>
+              <div id="widget-quest-title" style="font-size: 0.85rem; font-weight: 700; color: #fff;">Meet one new person</div>
+              <div style="font-size: 0.72rem; color: var(--secondary-color); margin-top: 4px; font-weight: 700;">+25 XP Reward Pending</div>
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="card" style="padding: 16px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="calendar" style="color: var(--primary-color)"></i> Upcoming Events</h4>
+              <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.75rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
+                <li><strong style="color: #fff;">10:00 PM</strong> • Hackathon Kickoff</li>
+                <li><strong style="color: #fff;">Tomorrow</strong> • Movie Night Event</li>
+              </ul>
+            </div>
+
+            <!-- Memory of the Day -->
+            <div class="card" style="padding: 16px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="history" style="color: #fbbf24"></i> Memory of the Day</h4>
+              <p style="margin: 0; font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4;">One year ago, you completed your first 3D soundwave call with <strong style="color: #fff;">Ravi</strong>.</p>
+            </div>
+
+            <!-- Spotify Sync Widget -->
+            <div class="card" style="padding: 16px; background: linear-gradient(135deg, rgba(30,215,96,0.05) 0%, rgba(0,0,0,0) 100%);">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="music" style="color: #1ed760"></i> Now Playing</h4>
+              <div style="font-size: 0.8rem; font-weight: 700; color: #fff;">Starlight Synapses</div>
+              <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px;">Nebula Waves • Spotify Live Sync</div>
+            </div>
+
+            <!-- Trending AI Topic -->
+            <div class="card" style="padding: 16px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="cpu" style="color: var(--secondary-color)"></i> Trending AI Topic</h4>
+              <div style="font-size: 0.8rem; font-weight: 700; color: #fff;">#VAPIDSockets</div>
+              <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px;">Securing webRTC streams with encrypted dynamic routing tags.</div>
+            </div>
+
+            <!-- Suggested Spaces -->
+            <div class="card" style="padding: 16px; grid-column: span 2;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.82rem; font-weight: 700; color: #fff;"><i data-lucide="globe" style="color: var(--accent-color)"></i> Suggested Spaces</h4>
+              <div style="display: flex; gap: 8px;" id="dashboard-suggested-spaces">
+                <!-- dynamic suggested spaces -->
+              </div>
+            </div>
+            
           </div>
         </div>
 
@@ -614,22 +662,47 @@
               </footer>
             </div>
             
-            <!-- AI Copilot Panel drawer (collapsible on right) -->
-            <aside class="chat-ai-panel" id="chat-ai-panel">
-              <header class="ai-panel-header">
-                <i data-lucide="bot" class="glow-accent"></i>
-                <h3>Aero AI Copilot</h3>
+            <!-- AeroMind Right Panel Dashboard -->
+            <aside class="chat-ai-panel" id="chat-ai-panel" style="width: 320px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; border-left: 1px solid var(--panel-border); background: rgba(18,24,39,0.5); backdrop-filter: blur(20px);">
+              <header class="ai-panel-header" style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; margin-bottom: 8px;">
+                <i data-lucide="bot" class="glow-accent" style="color: var(--secondary-color);"></i>
+                <h3 style="margin: 0; font-size: 1rem; color: #fff;">AeroMind Panel</h3>
               </header>
-              <div class="ai-panel-body">
-                <button class="ai-action-btn" id="ai-btn-summarize"><i data-lucide="scroll"></i> Summarize chat</button>
-                <button class="ai-action-btn" id="ai-btn-translate"><i data-lucide="languages"></i> Translate to Spanish</button>
-                <button class="ai-action-btn" id="ai-btn-rewrite"><i data-lucide="edit-3"></i> Rewrite reply</button>
-                <button class="ai-action-btn" id="ai-btn-grammar"><i data-lucide="check-square"></i> Fix Grammar</button>
-                <button class="ai-action-btn" id="ai-btn-suggest"><i data-lucide="sparkles"></i> Smart Suggestions</button>
-                
-                <div class="ai-response-box mt-3 hidden" id="ai-response-box">
-                  <label>Copilot response</label>
-                  <p id="ai-response-text">Analyzing context...</p>
+              
+              <!-- 1. Today's AI Suggestions -->
+              <div class="aeromind-card card" style="padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.02);">
+                <h4 style="margin: 0 0 6px 0; font-size: 0.78rem; font-weight: 700; color: var(--secondary-color);"><i data-lucide="sparkles" style="width: 12px; vertical-align: middle;"></i> Suggestions</h4>
+                <p style="margin: 0; font-size: 0.72rem; color: var(--text-secondary);">Ask Suresh about his travel itinerary to get alignment.</p>
+              </div>
+
+              <!-- 2. Daily Summary -->
+              <div class="aeromind-card card" style="padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.02);">
+                <h4 style="margin: 0 0 6px 0; font-size: 0.78rem; font-weight: 700; color: var(--accent-color);"><i data-lucide="list" style="width: 12px; vertical-align: middle;"></i> Missed Updates</h4>
+                <p style="margin: 0; font-size: 0.72rem; color: var(--text-secondary);">3 unread messages in Hackathon Space during coding session.</p>
+              </div>
+
+              <!-- 3. People You Should Talk To -->
+              <div class="aeromind-card card" style="padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.02);">
+                <h4 style="margin: 0 0 6px 0; font-size: 0.78rem; font-weight: 700; color: var(--primary-color);"><i data-lucide="users" style="width: 12px; vertical-align: middle;"></i> Social Connect</h4>
+                <p style="margin: 0; font-size: 0.72rem; color: var(--text-secondary);">Anjali is online and studying. Ping her to study together.</p>
+              </div>
+
+              <!-- 4. Recommended Spaces -->
+              <div class="aeromind-card card" style="padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.02);">
+                <h4 style="margin: 0 0 6px 0; font-size: 0.78rem; font-weight: 700; color: #fbbf24;"><i data-lucide="globe" style="width: 12px; vertical-align: middle;"></i> Recommended Space</h4>
+                <p style="margin: 0; font-size: 0.72rem; color: var(--text-secondary);">Join Coding Space for a live speed-run session tonight.</p>
+              </div>
+
+              <!-- 5. Quick AI Actions -->
+              <div class="card" style="padding: 12px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.78rem; color: #fff;">Quick AI Helpers</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <button class="btn btn-outline btn-xs" id="ai-btn-summarize" style="font-size: 0.68rem; padding: 6px; width: 100%; text-align: left;"><i data-lucide="scroll" style="width: 12px; margin-right: 4px;"></i> Summarize Chat</button>
+                  <button class="btn btn-outline btn-xs" id="ai-btn-translate" style="font-size: 0.68rem; padding: 6px; width: 100%; text-align: left;"><i data-lucide="languages" style="width: 12px; margin-right: 4px;"></i> Translate Chat</button>
+                  <button class="btn btn-outline btn-xs" id="ai-btn-rewrite" style="font-size: 0.68rem; padding: 6px; width: 100%; text-align: left;"><i data-lucide="edit-3" style="width: 12px; margin-right: 4px;"></i> Smart Reply</button>
+                </div>
+                <div class="ai-response-box mt-2 hidden" id="ai-response-box" style="background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border); padding: 8px; border-radius: 8px;">
+                  <p id="ai-response-text" style="font-size: 0.72rem; margin: 0; color: var(--secondary-color);">Analyzing...</p>
                 </div>
               </div>
             </aside>
@@ -684,82 +757,64 @@
             <button class="mood-btn" data-mood="Relaxed">Relaxed 🌿</button>
           </div>
 
-          <!-- Split Social Layout -->
-          <div class="feed-split-layout">
-            <div class="feed-posts-area">
-              <div id="feed-posts" class="feed-posts-list">
-                <!-- Feed cards will render here -->
-                <div class="empty-state">No posts yet. Be the first to share!</div>
+          <!-- Universe Dashboard Grid -->
+          <div class="universe-dashboard-grid" id="universe-dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
+            <!-- 1. Friends Updates Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="users" style="color: var(--secondary-color)"></i> Friends Updates
               </div>
+              <div class="card-body mt-2" id="universe-friends-updates" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
             </div>
-            
-            <!-- Right Feed Sidebar -->
-            <aside class="feed-right-sidebar">
-              <div class="feed-sidebar-card">
-                <h3>Trending Topics</h3>
-                <ul class="trending-list-feed">
-                  <li>
-                    <span class="trend-tag">#AeroTalkUpgrades</span>
-                    <p class="trend-stats">1.2k conversations today</p>
-                  </li>
-                  <li>
-                    <span class="trend-tag">#AITwinsIdentity</span>
-                    <p class="trend-stats">850 active simulations</p>
-                  </li>
-                  <li>
-                    <span class="trend-tag">#PioneerClub</span>
-                    <p class="trend-stats">420 milestone goals completed</p>
-                  </li>
-                </ul>
+            <!-- 2. Trending Topics Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="trending-up" style="color: var(--accent-color)"></i> Trending Topics
               </div>
-              
-              <div class="feed-sidebar-card mt-3">
-                <h3>Suggested Creators</h3>
-                <ul id="suggested-creators-list" class="suggested-creators-list">
-                  <li class="creator-suggestion-item">
-                    <div class="creator-details-row">
-                      <div class="avatar" style="background-color: var(--accent-color)">R</div>
-                      <div>
-                        <h4>Ravi Kumar</h4>
-                        <p>@ravi • AI Enthusiast</p>
-                      </div>
-                    </div>
-                    <button class="btn btn-xs btn-outline add-suggested-friend" data-email="ravi@aerotalk.com">Add</button>
-                  </li>
-                  <li class="creator-suggestion-item mt-2">
-                    <div class="creator-details-row">
-                      <div class="avatar" style="background-color: var(--primary-color)">B</div>
-                      <div>
-                        <h4>Bob W.</h4>
-                        <p>@bob • Verified Pioneer</p>
-                      </div>
-                    </div>
-                    <button class="btn btn-xs btn-outline add-suggested-friend" data-email="bob@aerotalk.com">Add</button>
-                  </li>
-                </ul>
+              <div class="card-body mt-2" id="universe-trending-topics" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
+            <!-- 3. Campus & Nearby Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="map-pin" style="color: var(--primary-color)"></i> Campus & Nearby Events
               </div>
-
-              <div class="feed-sidebar-card mt-3">
-                <h3>Recommended Rooms</h3>
-                <ul class="communities-list-sidebar">
-                  <li><i data-lucide="cpu" class="small-icon"></i> AI Pioneers</li>
-                  <li><i data-lucide="rocket" class="small-icon"></i> Launchpad 2026</li>
-                  <li><i data-lucide="music" class="small-icon"></i> Aero Beats</li>
-                </ul>
+              <div class="card-body mt-2" id="universe-campus-updates" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
+            <!-- 4. Creator Highlights Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="star" style="color: #fbbf24"></i> Creator Highlights
               </div>
-              
-              <!-- Floating Aero AI Assistant Widget -->
-              <div class="feed-sidebar-card mt-3 bg-gradient-premium">
-                <div class="ai-widget-header">
-                  <i data-lucide="bot" class="glow-accent"></i>
-                  <h4>Aero AI Assistant</h4>
-                </div>
-                <p class="small-text mt-1 text-secondary">Ask me to summarize trending topics or rewrite posts!</p>
-                <div class="ai-widget-actions mt-2">
-                  <button class="btn btn-xs btn-accent w-100" id="widget-ai-trends-btn">Summarize Trends</button>
-                </div>
+              <div class="card-body mt-2" id="universe-creator-highlights" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
+            <!-- 5. Gaming Esports Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="gamepad-2" style="color: var(--accent-color)"></i> Gaming & Esports
               </div>
-            </aside>
+              <div class="card-body mt-2" id="universe-gaming-events" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
+            <!-- 6. Startup News Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="rocket" style="color: var(--secondary-color)"></i> Tech & Startup News
+              </div>
+              <div class="card-body mt-2" id="universe-startup-news" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
+            <!-- 7. Music & Media Releases Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="music" style="color: var(--primary-color)"></i> New Music & Movies
+              </div>
+              <div class="card-body mt-2" id="universe-music-releases" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
+            <!-- 8. AI Recommendations Card -->
+            <div class="universe-card card glow-card hover-glow" style="min-height: 200px;">
+              <div class="card-header" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-weight: 700; color: #fff;">
+                <i data-lucide="bot" style="color: var(--secondary-color)"></i> Community Recommends
+              </div>
+              <div class="card-body mt-2" id="universe-community-recommendations" style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">Loading...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -803,17 +858,41 @@
           <!-- Timeline & AI Twin Dual Column -->
           <div class="profile-columns mt-4">
             
-            <!-- Column 1: Timeline -->
-            <div class="timeline-column card">
-              <h3>Digital Timeline</h3>
-              <div id="profile-timeline-list" class="timeline-trail mt-3">
-                <div class="timeline-item">
-                  <div class="timeline-bullet"></div>
-                  <div class="timeline-content">
-                    <h4>Joined AeroTalk</h4>
-                    <p>Created secure digital identity on the platform</p>
-                    <span>1/1/2026</span>
-                  </div>
+            <!-- Column 1: Identity Dashboard (Life Card) -->
+            <div class="timeline-column card" style="display: flex; flex-direction: column; gap: 16px;">
+              <h3>Digital Identity Cards</h3>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <!-- Aura and Mood -->
+                <div class="card" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);">
+                  <span style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Current Aura</span>
+                  <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent-color); margin-top: 4px;">Cosmic Glow 🔮</div>
+                </div>
+
+                <div class="card" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);">
+                  <span style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Friendship Score</span>
+                  <div style="font-size: 0.95rem; font-weight: 700; color: var(--secondary-color); margin-top: 4px;">980 Pts</div>
+                </div>
+
+                <!-- Coding Streak and Gaming Rank -->
+                <div class="card" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);">
+                  <span style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Coding Streak</span>
+                  <div style="font-size: 0.95rem; font-weight: 700; color: #fbbf24; margin-top: 4px;">12 Days 🔥</div>
+                </div>
+
+                <div class="card" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);">
+                  <span style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Gaming Rank</span>
+                  <div style="font-size: 0.95rem; font-weight: 700; color: var(--primary-color); margin-top: 4px;">Apex Elite 🎮</div>
+                </div>
+              </div>
+
+              <!-- Interests & Skills -->
+              <div class="card" style="padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.78rem; font-weight: 700; color: #fff;">Learning & Interest Tracks</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                  <span style="background: rgba(0,230,195,0.1); border: 1px solid var(--secondary-color); color: var(--secondary-color); font-size: 0.62rem; padding: 4px 8px; border-radius: 6px;">Next.js</span>
+                  <span style="background: rgba(255,61,170,0.1); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 0.62rem; padding: 4px 8px; border-radius: 6px;">WebRTC 3D</span>
+                  <span style="background: rgba(123,63,242,0.1); border: 1px solid var(--primary-color); color: var(--primary-color); font-size: 0.62rem; padding: 4px 8px; border-radius: 6px;">UI/UX Design</span>
                 </div>
               </div>
             </div>
@@ -843,85 +922,81 @@
         </div>
       </div>
 
-      <!-- PANE 4: DREAM BOARD (Goals & Capsule, hidden) -->
+      <!-- PANE 4: QUEST BOARD (hidden) -->
       <div id="pane-dreams" class="viewport-pane hidden">
         <div class="dreams-layout">
           <header class="feed-header-panel">
             <div class="header-meta">
-              <h2>Dream Board</h2>
-              <p>Write your future goals and create future time capsules.</p>
+              <h2>🎯 Daily Quests & Social Challenges</h2>
+              <p>Complete daily challenges, level up your profile, and earn premium digital XP badges.</p>
             </div>
           </header>
 
           <div class="profile-columns mt-3">
-            <!-- Left: Goals tracker -->
+            <!-- Left: Challenges -->
             <div class="card flex-grow flex-grow-card">
-              <div class="section-header-row mb-3">
-                <h3>Milestones Tracker</h3>
-                <button id="add-goal-btn" class="btn btn-accent btn-sm-action"><i data-lucide="plus"></i> Add Goal</button>
-              </div>
+              <h3>Today's Social Challenges</h3>
+              <p class="small-text text-muted mb-3">Tapping completed challenges awards +25 XP instantly.</p>
               
-              <!-- Goal Constructor -->
-              <div id="goal-creator-card" class="goal-creator-card hidden mb-3">
-                <div class="input-group">
-                  <label for="new-goal-title">Goal Description</label>
-                  <input type="text" id="new-goal-title" placeholder="Learn Japanese, Lose Weight, Build Startup...">
-                </div>
-                <div class="input-group mt-2">
-                  <label for="new-goal-category">Category</label>
-                  <select id="new-goal-category" class="select-goal-class">
-                    <option value="Education">Education</option>
-                    <option value="Startups">Startups</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Personal Growth">Personal Growth</option>
-                  </select>
-                </div>
-                <button id="save-new-goal" class="btn btn-accent btn-sm-action mt-3">Save Goal</button>
-              </div>
-
-              <div id="dreams-goals-list" class="goals-grid-list">
-                <!-- Goals injected here -->
-                <div class="empty-state">No goals created. Add your first goal above!</div>
+              <div class="quest-challenges-list" style="display: flex; flex-direction: column; gap: 12px;" id="quest-challenges-list">
+                <!-- dynamic challenges check boxes -->
               </div>
             </div>
 
-            <!-- Right: Time Capsule Creator -->
-            <div class="card time-capsule-creator-card">
-              <h3>Create Time Capsule</h3>
-              <p class="small-text text-muted mb-3">Seal a message in the future. Unlocks on specified date.</p>
+            <!-- Right: Achievements & Progress Ring -->
+            <div class="card quest-stats-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+              <h3>Your Progression Profile</h3>
               
-              <div class="input-group">
-                <label for="capsule-message">Time Capsule message</label>
-                <textarea id="capsule-message" placeholder="A message for your future self..." class="text-area-profile"></textarea>
+              <!-- Progress Ring -->
+              <div class="progress-ring-container mt-3" style="position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;">
+                <svg width="140" height="140" style="transform: rotate(-90deg);">
+                  <circle cx="70" cy="70" r="58" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent"/>
+                  <circle cx="70" cy="70" r="58" stroke="var(--accent-color)" stroke-width="8" fill="transparent"
+                          stroke-dasharray="364.4" stroke-dashoffset="109.3" id="quest-progress-svg" style="transition: stroke-dashoffset 0.4s ease;"/>
+                </svg>
+                <div style="position: absolute; display: flex; flex-direction: column; align-items: center;">
+                  <span id="quest-level-tag" style="font-size: 1.6rem; font-weight: 800; color: #fff;">Lvl 4</span>
+                  <span style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Pioneer</span>
+                </div>
               </div>
-              <div class="input-group mt-2">
-                <label for="capsule-date">Unlock Date</label>
-                <input type="date" id="capsule-date">
+
+              <!-- Progression Stats -->
+              <div class="stats-row mt-4" style="display: flex; gap: 24px; justify-content: center; width: 100%;">
+                <div>
+                  <div id="quest-xp-value" style="font-size: 1.2rem; font-weight: 700; color: var(--secondary-color);">350 XP</div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted);">Daily XP</div>
+                </div>
+                <div style="border-left: 1px solid var(--panel-border); padding-left: 24px;">
+                  <div id="quest-streak-value" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-color);">5 Days</div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted);">Weekly Streak</div>
+                </div>
               </div>
-              <button id="seal-capsule-btn" class="btn btn-primary mt-3 w-100"><i data-lucide="lock"></i> Seal Time Capsule</button>
+
+              <!-- Badges earned -->
+              <div class="badges-earned mt-4" style="width: 100%; border-top: 1px solid var(--panel-border); padding-top: 16px;">
+                <h4 style="font-size: 0.8rem; text-align: left; margin-bottom: 8px;">Earned Badges</h4>
+                <div class="badges-row" style="display: flex; gap: 8px; justify-content: flex-start;">
+                  <span class="badge" style="background: rgba(0, 230, 195, 0.1); border: 1px solid var(--secondary-color); color: var(--secondary-color); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px;">🌌 Cosmic Voyager</span>
+                  <span class="badge" style="background: rgba(255, 61, 170, 0.1); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px;">🎯 Completionist</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- PANE 5: SKILL EXCHANGE (Mentor matching, hidden) -->
+      <!-- PANE 5: TEMPORARY SPACES VIEWPORT (hidden) -->
       <div id="pane-skills" class="viewport-pane hidden">
         <div class="skills-layout">
           <header class="feed-header-panel">
             <div class="header-meta">
-              <h2>Skill Exchange matchmaking</h2>
-              <p>AI matchmaking compatible learners and mentors dynamically.</p>
+              <h2>🌌 Temporary Social Spaces</h2>
+              <p>Spontaneous, dynamic micro-communities that disappear after events conclude.</p>
             </div>
           </header>
 
-          <div class="card mt-3">
-            <h3>Compatible Exchanges Available</h3>
-            <p class="small-text text-muted mb-3">Matches are based on overlap in "I Teach" and "I Want to Learn" profiles.</p>
-            
-            <div id="skills-exchange-list" class="skills-match-grid mt-4">
-              <!-- Matches dynamic injected -->
-              <div class="empty-state">No compatible exchange partners online right now. Add skills in profile to search.</div>
-            </div>
+          <div class="spaces-grid mt-4" id="spaces-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            <!-- Dynamic spaces injected here -->
           </div>
         </div>
       </div>
@@ -1025,66 +1100,24 @@
         <div class="pulse-layout">
           <header class="feed-header-panel">
             <div class="header-meta">
-              <h2>Pulse Activity Dashboard</h2>
-              <p>Track your real-time digital identity footprints and reputation statistics.</p>
+              <h2>⚡ Pulse Live Activity</h2>
+              <p>Real-time social synchronization updates from your network circles.</p>
             </div>
           </header>
-          <div class="profile-columns mt-3">
-            <!-- Digital Trust score -->
-            <div class="card pulse-stats-card">
-              <h3>Digital Trust Score</h3>
-              <div class="pulse-radial-indicator mt-3">
-                <div class="radial-score">
-                  <span class="score-number">185</span>
-                  <span class="score-max">/ 200</span>
-                </div>
-                <div class="radial-label">Pioneer Level</div>
-              </div>
-              <div class="stats-indicators-grid mt-4">
-                <div class="stat-indicator">
-                  <span class="indicator-label">Reputation Status</span>
-                  <strong class="text-success">EXCELLENT</strong>
-                </div>
-                <div class="stat-indicator">
-                  <span class="indicator-label">Network Tier</span>
-                  <strong class="text-accent">PIONEER II</strong>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Interaction analytics -->
-            <div class="card pulse-graph-card">
-              <h3>Connection Footprints</h3>
-              <ul class="connection-footprints-list mt-3">
-                <li>
-                  <span>WebSocket Sockets Connected</span>
-                  <strong>1 Active Node</strong>
-                </li>
-                <li>
-                  <span>Active RTC Audio Streams</span>
-                  <strong class="text-success">Ready</strong>
-                </li>
-                <li>
-                  <span>RTC Video Frame Resolution</span>
-                  <strong>1080p Ultra HD</strong>
-                </li>
-                <li>
-                  <span>Aero AI Fact-Check Verifications</span>
-                  <strong>28 Completed</strong>
-                </li>
-              </ul>
-            </div>
+          
+          <div class="pulse-activities-container mt-4" id="pulse-activities-list" style="display: flex; flex-direction: column; gap: 16px; max-width: 600px; margin: 20px auto;">
+            <!-- Dynamic activities injected here -->
           </div>
         </div>
       </div>
 
-      <!-- PANE 9: AI HUB VIEWPORT (hidden) -->
+      <!-- PANE 9: AEROMIND VIEWPORT (hidden) -->
       <div id="pane-aihub" class="viewport-pane hidden">
         <div class="aihub-layout">
           <header class="feed-header-panel">
             <div class="header-meta">
-              <h2>Aero AI Hub</h2>
-              <p>Train your AI Twin simulator, analyze sentiment, or brainstorm posts instantly.</p>
+              <h2>🤖 AeroMind Life Assistant</h2>
+              <p>Train your digital twin, brainstorm cosmic ideas, create events, and track life goals.</p>
             </div>
           </header>
           <div class="profile-columns mt-3">
