@@ -1272,15 +1272,18 @@ body::after {
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
 
 /* Responsiveness Settings */
-@media (max-width: 900px) {
-  #app { flex-direction: column; }
+/* Tablet view settings */
+@media (min-width: 769px) and (max-width: 992px) {
+  #app { flex-direction: row; }
   .sidebar {
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--panel-border);
-    padding: 16px;
-    gap: 16px;
+    width: 260px;
+    flex-shrink: 0;
+  }
+  .left-nav-sidebar {
+    width: 70px;
+  }
+  .left-nav-sidebar.collapsed {
+    width: 70px;
   }
   .local-video-container {
     width: 100px;
@@ -3659,5 +3662,180 @@ kbd {
   height: 28px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+
+/* ==========================================================================
+   PREMIUM MOBILE RESPONSIVE LAYOUT (<= 768px)
+   ========================================================================== */
+
+/* Mobile Bottom Navigation styling */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(12, 13, 20, 0.92);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 1px solid var(--panel-border);
+  display: none; /* Hidden on desktop */
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  padding: 0 10px;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 20%;
+  height: 100%;
+  transition: var(--transition-smooth);
+}
+
+.mobile-nav-btn i, .mobile-nav-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.mobile-nav-btn.active {
+  color: var(--accent-color);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 255, 210, 0.2);
+}
+
+.mobile-nav-btn.active i, .mobile-nav-btn.active svg {
+  transform: translateY(-2px) scale(1.08);
+}
+
+/* Mobile back button */
+.mobile-back-btn {
+  display: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+
+.mobile-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-color);
+}
+
+/* Mobile Media Queries */
+@media (max-width: 768px) {
+  /* Display Bottom Nav */
+  .mobile-bottom-nav {
+    display: flex;
+  }
+
+  /* Hide Desktop vertical Left Sidebar */
+  .left-nav-sidebar {
+    display: none !important;
+  }
+
+  /* App container adjustments for bottom nav */
+  #app {
+    flex-direction: column;
+    height: 100vh;
+    padding-bottom: 64px; /* Space for bottom nav */
+    border-radius: 0;
+    border: none;
+  }
+
+  /* Column Toggling logic on Mobile */
+  .app-sidebar-drawer {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    border-right: none;
+  }
+
+  .app-main-viewport {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    flex-grow: 1;
+  }
+
+  /* Class toggles managed by JS to slide between chat details and lists */
+  #app.show-sidebar-drawer .app-sidebar-drawer {
+    display: block;
+  }
+  
+  #app.show-sidebar-drawer .app-main-viewport {
+    display: none;
+  }
+
+  #app.show-chat-viewport .app-sidebar-drawer {
+    display: none;
+  }
+  
+  #app.show-chat-viewport .app-main-viewport {
+    display: block;
+  }
+
+  /* Show back button in active chat header */
+  .mobile-back-btn {
+    display: flex;
+  }
+
+  /* UI Cards and lists optimizations */
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .profile-columns {
+    grid-template-columns: 1fr;
+  }
+
+  /* Chat elements spacing */
+  .chat-window-layout {
+    flex-direction: column;
+  }
+
+  .chat-ai-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--panel-border);
+    height: auto;
+    max-height: 250px;
+  }
+
+  /* Social feed */
+  .feed-split-layout {
+    flex-direction: column;
+  }
+
+  .feed-posts-area {
+    max-width: 100%;
+  }
+
+  /* CSS tweaks to make everything look pristine and touch-friendly */
+  .recent-item {
+    padding: 12px 16px;
+  }
 }
 

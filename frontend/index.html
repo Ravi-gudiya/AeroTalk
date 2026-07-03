@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AeroTalk | Premium Chat & Calling Platform</title>
   <meta name="description" content="Connect, text chat, and make crystal-clear audio and video calls directly from your browser using WebRTC. Modern, secure, and instant peer-to-peer communication.">
+  
+  <!-- PWA iOS Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AeroTalk">
+  <link rel="apple-touch-icon" href="/icon.jpg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0c0d14">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -479,6 +488,9 @@
           <div class="chat-window-layout">
             <div class="chat-main-area">
               <header class="chat-header">
+                <button id="mobile-back-btn" class="mobile-back-btn" title="Back to chats">
+                  <i data-lucide="arrow-left"></i>
+                </button>
                 <div class="peer-info">
                   <div id="chat-avatar" class="avatar glow-accent-border">
                     <span id="peer-avatar-initial">?</span>
@@ -1088,8 +1100,40 @@
       </div>
     </div>
 
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+      <button class="mobile-nav-btn active" id="mobile-nav-chats" title="Chat">
+        <i data-lucide="message-square"></i>
+        <span>Chat</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobile-nav-feed" title="Feed">
+        <i data-lucide="rss"></i>
+        <span>Feed</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobile-nav-skills" title="Discover">
+        <i data-lucide="compass"></i>
+        <span>Discover</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobile-nav-profile" title="Profile">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobile-nav-admin" title="Settings">
+        <i data-lucide="settings"></i>
+        <span>Settings</span>
+      </button>
+    </nav>
   </div>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('PWA Service Worker registered successfully:', reg.scope))
+          .catch(err => console.warn('PWA Service Worker registration failed:', err));
+      });
+    }
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

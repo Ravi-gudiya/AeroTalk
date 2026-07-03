@@ -89,6 +89,7 @@ const createGroupSubmit = document.getElementById('create-group-submit');
 // Active Chat Frame
 const chatBlankState = document.getElementById('chat-blank-state');
 const chatActiveWindow = document.getElementById('chat-active-window');
+const chatAvatar = document.getElementById('chat-avatar');
 const peerAvatarInitial = document.getElementById('peer-avatar-initial');
 const chatStatusIndicator = document.getElementById('chat-status-indicator');
 const peerDisplayName = document.getElementById('peer-display-name');
@@ -178,6 +179,10 @@ function showMainApplication() {
   if (landing) landing.classList.add('hidden');
   authScreen.classList.add('hidden');
   appContainer.classList.remove('hidden');
+  
+  // Set default viewports state for mobile
+  appContainer.classList.remove('show-chat-viewport');
+  appContainer.classList.add('show-sidebar-drawer');
 
   // Set Profile
   myUsername.textContent = currentUser.username;
@@ -1225,6 +1230,13 @@ function openChatWindow(type, id) {
     saveActiveChats();
     updateActiveChatsUI();
   }
+
+  // Toggles mobile display class to reveal the chat window panel
+  const appEl = document.getElementById('app');
+  if (appEl) {
+    appEl.classList.remove('show-sidebar-drawer');
+    appEl.classList.add('show-chat-viewport');
+  }
 }
 
 function formatLastSeen(timestamp) {
@@ -1570,6 +1582,24 @@ function hideCallOverlay() { callOverlay.classList.add('hidden'); }
 
 function setupUIEvents() {
   
+  // Mobile UI Navigation Toggles
+  const mobileBackBtn = document.getElementById('mobile-back-btn');
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener('click', () => {
+      const appEl = document.getElementById('app');
+      appEl.classList.remove('show-chat-viewport');
+      appEl.classList.add('show-sidebar-drawer');
+    });
+  }
+
+  const mobileTabs = ['chats', 'feed', 'skills', 'profile', 'admin'];
+  mobileTabs.forEach(tabId => {
+    const btn = document.getElementById(`mobile-nav-${tabId}`);
+    if (btn) {
+      btn.addEventListener('click', () => switchDockTab(tabId));
+    }
+  });
+
   // Auth Form Toggle Buttons
   showRegisterBtn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -2404,6 +2434,23 @@ function switchDockTab(tabId) {
   document.querySelectorAll('.dock-btn, .nav-item-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.getElementById(`dock-${tabId}-btn`);
   if (activeBtn) activeBtn.classList.add('active');
+
+  // Sync mobile bottom-nav tabs
+  document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+  const activeMobileBtn = document.getElementById(`mobile-nav-${tabId}`);
+  if (activeMobileBtn) activeMobileBtn.classList.add('active');
+
+  // Scoped layout toggling for mobile viewports
+  const appEl = document.getElementById('app');
+  if (appEl) {
+    if (tabId === 'chats') {
+      appEl.classList.remove('show-chat-viewport');
+      appEl.classList.add('show-sidebar-drawer');
+    } else {
+      appEl.classList.remove('show-sidebar-drawer');
+      appEl.classList.add('show-chat-viewport');
+    }
+  }
 
   document.querySelectorAll('.sidebar-drawer-content').forEach(el => el.classList.add('hidden'));
   const targetDrawer = document.getElementById(`drawer-${tabId}`);
