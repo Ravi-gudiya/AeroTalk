@@ -386,6 +386,15 @@ function initializeRealtime() {
       fetchFeed();
     }
   });
+
+  socket.on('mood_changed', ({ email, mood }) => {
+    console.log(`[Socket Presence] Friend "${email}" updated mood: "${mood}"`);
+    const friend = friendsList.find(f => f.email.toLowerCase().trim() === email.toLowerCase().trim());
+    if (friend) {
+      friend.mood = mood;
+      updateFriendsUI();
+    }
+  });
 }
 
 // --- API Network Requests ---

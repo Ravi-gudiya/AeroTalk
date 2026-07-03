@@ -450,6 +450,13 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Handle mood updates
+  socket.on('mood_update', ({ mood }) => {
+    if (!userEmail) return;
+    console.log(`[Mood Update] User "${userEmail}" updated mood to: "${mood}"`);
+    socket.broadcast.emit('mood_changed', { email: userEmail, mood });
+  });
+
   socket.on('typing_group', ({ groupId, isTyping }) => {
     socket.to(`group_${groupId}`).emit('typing_group', { groupId, from: userEmail, isTyping });
   });
