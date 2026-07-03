@@ -716,8 +716,15 @@ body::after {
   background: radial-gradient(circle at center, rgba(138, 43, 226, 0.02) 0%, transparent 80%);
 }
 
+.message {
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .message-bubble {
-  max-width: 60%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 4px;
