@@ -1675,7 +1675,7 @@ function setupUIEvents() {
     });
   }
 
-  const mobileTabs = ['feed', 'vibe', 'pulse', 'profile'];
+  const mobileTabs = ['feed', 'vibe', 'chats', 'profile'];
   mobileTabs.forEach(tabId => {
     const btn = document.getElementById(`mobile-nav-${tabId}`);
     if (btn) {
