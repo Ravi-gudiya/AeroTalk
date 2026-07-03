@@ -4351,4 +4351,134 @@ body::before {
   box-shadow: 0 0 20px rgba(0, 230, 195, 0.7) !important;
 }
 
+/* ==========================================================================
+   NOTHING OS & APPLE VISION PRO SPATIAL OVERRIDES
+   ========================================================================== */
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+#app {
+  background: rgba(12, 13, 20, 0.45) !important;
+  backdrop-filter: blur(40px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(210%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8) !important;
+  border-radius: 32px !important; /* Premium 32px corners */
+}
+
+/* Horizontal 24h Moments scrollbar */
+.moments-section-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scrollbar-width: none;
+}
+.moments-section-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.moment-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 72px;
+}
+
+.moment-ring-border {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+  box-shadow: 0 0 10px rgba(0, 230, 195, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.moment-item:hover .moment-ring-border {
+  transform: scale(1.08);
+}
+
+.moment-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #121827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid var(--space-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+.plus-moment {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+}
+
+.moment-item span {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Feed Header Chat toggle icon */
+.feed-chat-toggle-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.feed-chat-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 12px rgba(0, 230, 195, 0.4);
+}
+
+/* Vibe Creator panel */
+.vibe-creator-layout {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 24px;
+}
+
+/* Dynamic moments lists row */
+.dynamic-moments-row {
+  display: flex;
+  gap: 16px;
+}
+
+
 

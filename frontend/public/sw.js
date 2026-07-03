@@ -46,3 +46,44 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// Push notification listener
+self.addEventListener('push', (event) => {
+  let data = { title: 'AeroTalk Alert', body: 'You received a new message!' };
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (err) {
+    if (event.data) {
+      data = { title: 'AeroTalk Alert', body: event.data.text() };
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/icon.jpg',
+      badge: '/icon.jpg',
+      vibrate: [100, 50, 100],
+      data: { url: '/' }
+    })
+  );
+});
+
+// Click notification to focus or open app window
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === '/' && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('/');
+      }
+    })
+  );
+});

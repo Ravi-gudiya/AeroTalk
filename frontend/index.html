@@ -161,33 +161,25 @@
       </div>
 
       <nav class="sidebar-navigation-items">
-        <button class="nav-item-btn active" id="dock-chats-btn" title="Home Hub">
+        <button class="nav-item-btn active" id="dock-home-btn" title="Universe Feed">
           <i data-lucide="home"></i>
           <span class="nav-label">Home</span>
         </button>
-        <button class="nav-item-btn" id="dock-themes-btn" title="User Vibes">
+        <button class="nav-item-btn" id="dock-vibe-btn" title="Vibes Upload">
           <i data-lucide="aperture"></i>
-          <span class="nav-label">Vibes</span>
+          <span class="nav-label">Vibe</span>
         </button>
-        <button class="nav-item-btn" id="dock-feed-btn" title="Universe Feed">
-          <i data-lucide="globe"></i>
-          <span class="nav-label">Universe</span>
+        <button class="nav-item-btn" id="dock-chats-btn" title="Messenger Hub">
+          <i data-lucide="message-square"></i>
+          <span class="nav-label">Chat</span>
         </button>
         <button class="nav-item-btn" id="dock-dreams-btn" title="Circles & Rooms">
           <i data-lucide="layers"></i>
           <span class="nav-label">Circles</span>
         </button>
-        <button class="nav-item-btn" id="dock-skills-btn" title="Explore Discover">
-          <i data-lucide="compass"></i>
-          <span class="nav-label">Explore</span>
-        </button>
         <button class="nav-item-btn" id="dock-pulse-btn" title="Pulse Analytics">
           <i data-lucide="zap"></i>
           <span class="nav-label">Pulse</span>
-        </button>
-        <button class="nav-item-btn" id="dock-aihub-btn" title="AI Assistant Hub">
-          <i data-lucide="bot"></i>
-          <span class="nav-label">AI Hub</span>
         </button>
         <button class="nav-item-btn" id="dock-profile-btn" title="Digital Identity">
           <i data-lucide="user"></i>
@@ -675,34 +667,23 @@
                 <input type="text" id="feed-search-input" placeholder="Search topics, tags...">
                 <i data-lucide="search" class="search-icon"></i>
               </div>
-              <button id="open-feed-post-modal-btn" class="feed-fab-btn" title="Create Post">
-                <i data-lucide="plus"></i>
+              <button id="header-feed-chat-btn" class="feed-chat-toggle-btn" title="Open Chat Messenger">
+                <i data-lucide="message-square"></i>
+                <span class="nav-badge" id="unread-chats-badge"></span>
               </button>
             </div>
           </header>
 
-          <!-- Horizontal Stories Section -->
-          <div class="stories-horizontal-scroll mb-3">
-            <div class="story-item yours" title="Share a memory">
-              <div class="story-avatar ring-active"><i data-lucide="plus"></i></div>
-              <span>Your Story</span>
+          <!-- Horizontal 24h Moments Section -->
+          <div class="moments-section-scroll mb-4" id="moments-section-scroll">
+            <div class="moment-item create-moment-item" id="add-moment-shortcut-btn">
+              <div class="moment-ring-border">
+                <div class="moment-avatar plus-moment"><i data-lucide="plus"></i></div>
+              </div>
+              <span>My Moment</span>
             </div>
-            <div class="story-item" title="Bob's Story">
-              <div class="story-avatar ring-active" style="background-color: var(--primary-color)">B</div>
-              <span>Bob W.</span>
-            </div>
-            <div class="story-item" title="Alice's Story">
-              <div class="story-avatar ring-active" style="background-color: var(--accent-color)">A</div>
-              <span>Alice</span>
-            </div>
-            <div class="story-item" title="Charlie's Story">
-              <div class="story-avatar" style="background-color: #fbbf24">C</div>
-              <span>Charlie</span>
-            </div>
-            <div class="story-item" title="Diana's Story">
-              <div class="story-avatar" style="background-color: #34d399">D</div>
-              <span>Diana</span>
-            </div>
+            <!-- Dynamic moments injected here -->
+            <div id="dynamic-moments-row" class="dynamic-moments-row"></div>
           </div>
 
           <!-- Mood Selector Bar -->
@@ -957,13 +938,13 @@
         </div>
       </div>
 
-      <!-- PANE 6: ADMIN PANEL (hidden) -->
+      <!-- PANE 6: ADMIN & SETTINGS PANEL (hidden) -->
       <div id="pane-admin" class="viewport-pane hidden">
         <div class="admin-layout">
           <header class="feed-header-panel">
             <div class="header-meta">
-              <h2>Admin Control Console</h2>
-              <p>Monitor system sockets, traffic logs, and active connections.</p>
+              <h2>Workspace Settings & Customization</h2>
+              <p>Configure theme colors, monitor live network nodes, and track analytics.</p>
             </div>
           </header>
 
@@ -992,37 +973,20 @@
                 </div>
                 <div class="progress-bar-admin"><div class="progress-bar-fill-admin" style="width: 5%"></div></div>
               </div>
-              <div class="stat-progress-widget mt-3">
-                <div class="stat-meta">
-                  <span>Fact Check Queue</span>
-                  <strong>0 pending</strong>
-                </div>
-                <div class="progress-bar-admin"><div class="progress-bar-fill-admin text-success" style="width: 0%"></div></div>
-              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- PANE 7: AERO THEMES VIEWPORT (Theme Gallery + Theme Creator) -->
-      <div id="pane-themes" class="viewport-pane hidden">
-        <div class="themes-layout">
-          <header class="feed-header-panel">
-            <div class="header-meta">
-              <h2>Aero Theme Gallery</h2>
-              <p>Browse built-in designs or build custom color configurations.</p>
-            </div>
-            <div class="theme-sharing-actions">
-              <button class="btn btn-outline btn-sm-action" id="theme-export-btn"><i data-lucide="upload"></i> Export</button>
-              <button class="btn btn-outline btn-sm-action" id="theme-import-btn"><i data-lucide="download"></i> Import</button>
-            </div>
-          </header>
-
-          <div class="theme-gallery-split mt-3">
-            
+          <!-- Futuristic Themes Customizer (Consolidated here!) -->
+          <div class="theme-gallery-split mt-4">
             <!-- Built-in Themes Gallery Grid -->
             <div class="theme-gallery-grid-col card flex-grow">
-              <h3>Built-in Premium Gallery</h3>
+              <div class="section-header-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">
+                <h3 style="margin: 0;">Visual Themes Customization</h3>
+                <div class="theme-sharing-actions">
+                  <button class="btn btn-outline btn-sm-action" id="theme-export-btn"><i data-lucide="upload"></i> Export</button>
+                  <button class="btn btn-outline btn-sm-action" id="theme-import-btn"><i data-lucide="download"></i> Import</button>
+                </div>
+              </div>
               <div class="theme-cards-grid mt-3" id="theme-gallery-grid">
                 <!-- Dynamically injected theme cards -->
               </div>
@@ -1058,13 +1022,12 @@
 
               <div class="creator-name-group mt-3">
                 <label for="custom-theme-name">Save Theme Preset</label>
-                <div class="input-row mt-1">
-                  <input type="text" id="custom-theme-name" placeholder="Theme name..." style="font-size: 0.8rem;">
+                <div class="input-row mt-1" style="display: flex; gap: 8px;">
+                  <input type="text" id="custom-theme-name" placeholder="Theme name..." style="font-size: 0.8rem; flex-grow: 1;">
                   <button class="btn btn-accent btn-sm-action" id="save-custom-theme-btn" style="padding: 6px 12px;">Save</button>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -1189,6 +1152,34 @@
               </div>
             </div>
           </div>
+        </div>
+      <!-- PANE 10: VIBE CREATOR (hidden) -->
+      <div id="pane-vibe" class="viewport-pane hidden">
+        <div class="vibe-creator-layout card">
+          <h3>Share to Universe & Moments</h3>
+          <p class="small-text text-muted mb-4">Post high-res photos, videos, or cosmic vibes that disappear after 24h.</p>
+          
+          <div class="post-image-picker mb-3">
+            <label for="vibe-image-input" class="post-image-label">
+              <i data-lucide="image" class="large-icon text-accent"></i>
+              <span id="vibe-image-status">Upload Image or Video</span>
+            </label>
+            <input type="file" id="vibe-image-input" accept="image/*,video/*" class="hidden">
+          </div>
+          
+          <div class="input-group mb-3">
+            <label for="vibe-caption-input">Describe your vibe...</label>
+            <input type="text" id="vibe-caption-input" placeholder="Captivate the universe...">
+          </div>
+          
+          <div class="share-options-row mb-4">
+            <label class="checkbox-container" style="display: flex; gap: 8px; align-items: center; font-size: 0.82rem; cursor: pointer;">
+              <input type="checkbox" id="share-as-moment" checked style="width: 16px; height: 16px;">
+              <span>Share to Moments (expires in 24h)</span>
+            </label>
+          </div>
+          
+          <button id="vibe-publish-btn" class="btn btn-accent w-100" style="padding: 12px; font-weight: 700;">Broadcast Vibe</button>
         </div>
       </div>
     </main>

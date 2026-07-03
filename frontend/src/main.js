@@ -180,9 +180,9 @@ function showMainApplication() {
   authScreen.classList.add('hidden');
   appContainer.classList.remove('hidden');
   
-  // Set default viewports state for mobile
-  appContainer.classList.remove('show-chat-viewport');
-  appContainer.classList.add('show-sidebar-drawer');
+  // Set default viewports state for mobile (show feed viewport by default)
+  appContainer.classList.remove('show-sidebar-drawer');
+  appContainer.classList.add('show-chat-viewport');
 
   // Set Profile
   myUsername.textContent = currentUser.username;
@@ -190,7 +190,13 @@ function showMainApplication() {
   renderAvatar(myAvatar, currentUser.username, currentUser.avatarUrl, currentUser.avatarColor);
   
   initializeRealtime();
-  switchDockTab('chats'); // Load default dock tab
+  
+  // Request notifications permissions
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+
+  switchDockTab('feed'); // Load default feed dock tab
 }
 
 function handleLogout() {
@@ -318,6 +324,15 @@ function initializeRealtime() {
     const isIncoming = msg.from !== currentUser.email;
     const partnerEmail = isIncoming ? msg.from : msg.to;
     
+    // Trigger desktop/mobile OS native push alert notification if tab is hidden/minimized
+    if (isIncoming && document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+      const sender = peerNameMap[msg.from] || msg.from;
+      new Notification(`New Message from ${sender}`, {
+        body: msg.content.startsWith('<div') ? 'Shared an attachment/voice note' : msg.content,
+        icon: '/icon.jpg'
+      });
+    }
+
     // Save to active session cache
     if (!activeChats.includes(partnerEmail)) {
       activeChats.push(partnerEmail);
@@ -2632,12 +2647,23 @@ function handleTwinChatSend() {
 // 3. Main Dashboard Tab dock switcher
 function switchDockTab(tabId) {
   document.querySelectorAll('.dock-btn, .nav-item-btn').forEach(btn => btn.classList.remove('active'));
-  const activeBtn = document.getElementById(`dock-${tabId}-btn`);
+  
+  // Resolve desktop sidebar button IDs
+  let dockBtnId = `dock-${tabId}-btn`;
+  if (tabId === 'feed') dockBtnId = 'dock-home-btn';
+  if (tabId === 'vibe') dockBtnId = 'dock-vibe-btn';
+  
+  const activeBtn = document.getElementById(dockBtnId);
   if (activeBtn) activeBtn.classList.add('active');
 
   // Sync mobile bottom-nav tabs
   document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
-  const activeMobileBtn = document.getElementById(`mobile-nav-${tabId}`);
+  
+  let mobileBtnId = `mobile-nav-${tabId}`;
+  if (tabId === 'feed') mobileBtnId = 'mobile-nav-chats'; // Home tab on mobile bottom nav
+  if (tabId === 'vibe') mobileBtnId = 'mobile-nav-themes'; // Vibes tab on mobile bottom nav
+  
+  const activeMobileBtn = document.getElementById(mobileBtnId);
   if (activeMobileBtn) activeMobileBtn.classList.add('active');
 
   // Scoped layout toggling for mobile viewports
@@ -2662,6 +2688,7 @@ function switchDockTab(tabId) {
 
   if (tabId === 'feed') {
     fetchFeed();
+    fetchMoments(); // Refresh 24h moments at the top of feed
   } else if (tabId === 'profile') {
     renderMainProfile();
   } else if (tabId === 'dreams') {
@@ -2670,6 +2697,7 @@ function switchDockTab(tabId) {
     renderSkillExchangeMatches();
   } else if (tabId === 'admin') {
     refreshAdminConsole();
+    renderThemeGallery(); // Consolidated Theme Customizer initialization!
   } else if (tabId === 'themes') {
     renderThemeGallery();
   }
@@ -3298,5 +3326,172 @@ function setupThemeCreatorAndCustomizers() {
         alert("Failed to parse theme code. Make sure it is valid JSON.");
       }
     });
+  }
+
+  // --- Vibe Post / Moment sharing bindings ---
+  const vibeImageInput = document.getElementById('vibe-image-input');
+  const vibeImageStatus = document.getElementById('vibe-image-status');
+  const vibePublishBtn = document.getElementById('vibe-publish-btn');
+  let selectedVibeFile = null;
+
+  if (vibeImageInput && vibeImageStatus) {
+    vibeImageInput.addEventListener('change', () => {
+      if (vibeImageInput.files.length > 0) {
+        selectedVibeFile = vibeImageInput.files[0];
+        vibeImageStatus.textContent = selectedVibeFile.name;
+      }
+    });
+  }
+
+  if (vibePublishBtn) {
+    vibePublishBtn.addEventListener('click', async () => {
+      const caption = document.getElementById('vibe-caption-input').value.trim();
+      const isMoment = document.getElementById('share-as-moment').checked;
+      
+      if (!selectedVibeFile && !caption) {
+        return alert("Please select an image/video or type a caption to share your vibe!");
+      }
+
+      vibePublishBtn.disabled = true;
+      vibePublishBtn.textContent = "Publishing...";
+
+      let imageUrl = '';
+      if (selectedVibeFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedVibeFile);
+
+          const uploadRes = await apiFetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+
+          if (uploadRes.status === 200) {
+            const fileData = await uploadRes.json();
+            imageUrl = fileData.fileUrl;
+          } else {
+            alert('Vibe media upload failed.');
+            vibePublishBtn.disabled = false;
+            vibePublishBtn.textContent = "Broadcast Vibe";
+            return;
+          }
+        } catch (err) {
+          console.error(err);
+          vibePublishBtn.disabled = false;
+          vibePublishBtn.textContent = "Broadcast Vibe";
+          return;
+        }
+      }
+
+      try {
+        const postRes = await apiFetch('/api/feed', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            imageUrl: imageUrl || '/icon.jpg', // Fallback to logo if text-only vibe
+            caption,
+            isMoment
+          })
+        });
+
+        if (postRes.status === 201) {
+          // Clear inputs
+          document.getElementById('vibe-caption-input').value = '';
+          if (vibeImageInput) vibeImageInput.value = '';
+          if (vibeImageStatus) vibeImageStatus.textContent = 'Upload Image or Video';
+          selectedVibeFile = null;
+
+          alert(isMoment ? 'Your 24h Moment has been published!' : 'Your post has been broadcast to the Universe!');
+          switchDockTab('feed'); // Go back to Home Feed
+        } else {
+          alert('Failed to publish vibe.');
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        vibePublishBtn.disabled = false;
+        vibePublishBtn.textContent = "Broadcast Vibe";
+      }
+    });
+  }
+
+  // Bind top header chat toggle click
+  const feedChatBtn = document.getElementById('header-feed-chat-btn');
+  if (feedChatBtn) {
+    feedChatBtn.addEventListener('click', () => {
+      switchDockTab('chats');
+    });
+  }
+
+  // Bind add moment shortcut button click
+  const addMomentBtn = document.getElementById('add-moment-shortcut-btn');
+  if (addMomentBtn) {
+    addMomentBtn.addEventListener('click', () => {
+      switchDockTab('vibe');
+      const shareMomentCheckbox = document.getElementById('share-as-moment');
+      if (shareMomentCheckbox) shareMomentCheckbox.checked = true;
+    });
+  }
+}
+
+// Fetch and render unexpired 24h PWA moments
+async function fetchMoments() {
+  const container = document.getElementById('dynamic-moments-row');
+  if (!container) return;
+  
+  try {
+    const res = await apiFetch('/api/moments', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (res.status !== 200) return;
+    const list = await res.json();
+    container.innerHTML = '';
+    
+    if (list.length === 0) {
+      // Inject some mock placeholders if no moments are online
+      container.innerHTML = `
+        <div class="moment-item" title="Bob's Vibe">
+          <div class="moment-ring-border">
+            <div class="moment-avatar" style="background-color: var(--primary-color)">B</div>
+          </div>
+          <span>Bob W.</span>
+        </div>
+        <div class="moment-item" title="Alice's Vibe">
+          <div class="moment-ring-border">
+            <div class="moment-avatar" style="background-color: var(--accent-color)">A</div>
+          </div>
+          <span>Alice</span>
+        </div>
+      `;
+    } else {
+      list.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'moment-item';
+        div.title = `${m.username}'s Moment`;
+        
+        let avatarStyle = '';
+        if (m.imageUrl) {
+          avatarStyle = `background-image: url(${m.imageUrl});`;
+        }
+        
+        div.innerHTML = `
+          <div class="moment-ring-border">
+            <div class="moment-avatar" style="${avatarStyle}">
+              ${m.imageUrl ? '' : m.username[0].toUpperCase()}
+            </div>
+          </div>
+          <span>${m.username}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+    window.lucide.createIcons();
+  } catch (err) {
+    console.error('[Moments Engine] Error fetching stories', err);
   }
 }

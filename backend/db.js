@@ -633,10 +633,13 @@ export const DB = {
 
   // --- Post Social Feed Operations ---
   
-  async createPost(email, username, avatarUrl, imageUrl, caption) {
+  async createPost(email, username, avatarUrl, imageUrl, caption, isMoment = false) {
     const cleanEmail = email.toLowerCase().trim();
     const confidence = Math.floor(Math.random() * 15) + 85;
     
+    // Prefix caption if it is a moment to differentiate in database
+    const dbCaption = isMoment ? `[MOMENT]${caption || ''}` : caption;
+
     if (isSupabaseActive()) {
       const { data: newPost, error } = await supabase
         .from('posts')
@@ -645,7 +648,7 @@ export const DB = {
           username,
           avatar_url: avatarUrl,
           image_url: imageUrl,
-          caption,
+          caption: dbCaption,
           confidence
         }])
         .select()
@@ -660,7 +663,8 @@ export const DB = {
         imageUrl: newPost.image_url,
         caption: newPost.caption,
         confidence: newPost.confidence,
-        timestamp: new Date(newPost.created_at).getTime()
+        timestamp: new Date(newPost.created_at).getTime(),
+        isMoment: isMoment
       };
     } else {
       const data = readLocalData();
@@ -670,9 +674,10 @@ export const DB = {
         username,
         avatarUrl,
         imageUrl,
-        caption,
+        caption: dbCaption,
         confidence,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        isMoment: isMoment
       };
       
       data.posts.push(newPost);
@@ -682,6 +687,7 @@ export const DB = {
   },
 
   async getFeed() {
+    let posts = [];
     if (isSupabaseActive()) {
       const { data: list, error } = await supabase
         .from('posts')
@@ -689,7 +695,7 @@ export const DB = {
         .order('created_at', { ascending: false });
         
       if (error || !list) return [];
-      return list.map(p => ({
+      posts = list.map(p => ({
         id: p.id,
         email: p.email,
         username: p.username,
@@ -697,12 +703,58 @@ export const DB = {
         imageUrl: p.image_url,
         caption: p.caption,
         confidence: p.confidence,
-        timestamp: new Date(p.created_at).getTime()
+        timestamp: new Date(p.created_at).getTime(),
+        isMoment: p.caption && p.caption.startsWith('[MOMENT]')
       }));
     } else {
       const data = readLocalData();
-      return data.posts.sort((a, b) => b.timestamp - a.timestamp);
+      posts = data.posts.map(p => ({
+        ...p,
+        isMoment: p.isMoment || (p.caption && p.caption.startsWith('[MOMENT]'))
+      })).sort((a, b) => b.timestamp - a.timestamp);
     }
+
+    // Filter out Moments from the general Universe Feed list
+    return posts.filter(p => !p.isMoment);
+  },
+
+  async getMoments() {
+    let posts = [];
+    if (isSupabaseActive()) {
+      const { data: list, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error || !list) return [];
+      posts = list.map(p => ({
+        id: p.id,
+        email: p.email,
+        username: p.username,
+        avatarUrl: p.avatar_url,
+        imageUrl: p.image_url,
+        caption: p.caption,
+        confidence: p.confidence,
+        timestamp: new Date(p.created_at).getTime(),
+        isMoment: p.caption && p.caption.startsWith('[MOMENT]')
+      }));
+    } else {
+      const data = readLocalData();
+      posts = data.posts.map(p => ({
+        ...p,
+        isMoment: p.isMoment || (p.caption && p.caption.startsWith('[MOMENT]'))
+      })).sort((a, b) => b.timestamp - a.timestamp);
+    }
+
+    const cutOffTime = Date.now() - 24 * 60 * 60 * 1000; // 24 Hours Expiry Limit
+
+    // Retrieve active moments and strip prefix in captions
+    return posts
+      .filter(p => p.isMoment && p.timestamp >= cutOffTime)
+      .map(p => ({
+        ...p,
+        caption: p.caption.replace('[MOMENT]', '')
+      }));
   },
 
   // --- Goal Operations ---

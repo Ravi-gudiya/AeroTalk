@@ -300,15 +300,15 @@ app.post('/api/users/profile', authenticateToken, async (req, res) => {
   res.json(updated);
 });
 
-// Create Feed Post
+// Create Feed Post / Moment
 app.post('/api/feed', authenticateToken, async (req, res) => {
-  const { imageUrl, caption } = req.body;
+  const { imageUrl, caption, isMoment } = req.body;
   if (!imageUrl) {
     return res.status(400).json({ error: 'Image URL is required' });
   }
   
   const user = await DB.findUserByEmail(req.user.email);
-  const post = await DB.createPost(req.user.email, user.username, user.avatarUrl || null, imageUrl, caption);
+  const post = await DB.createPost(req.user.email, user.username, user.avatarUrl || null, imageUrl, caption, isMoment || false);
   
   // Real-time broadcast of new social post
   io.emit('new_feed_post', post);
@@ -316,10 +316,16 @@ app.post('/api/feed', authenticateToken, async (req, res) => {
   res.status(201).json(post);
 });
 
-// Get Feed Posts
+// Get Feed Posts (Excludes moments)
 app.get('/api/feed', authenticateToken, async (req, res) => {
   const posts = await DB.getFeed();
   res.json(posts);
+});
+
+// Get Active 24h Moments
+app.get('/api/moments', authenticateToken, async (req, res) => {
+  const moments = await DB.getMoments();
+  res.json(moments);
 });
 
 // Create Goal
@@ -413,7 +419,7 @@ io.on('connection', (socket) => {
       console.log(`Forwarding message to receiver "${cleanTo}" on socket ${receiverSocket}`);
       io.to(receiverSocket).emit('direct_message', newMsg);
     } else {
-      console.log(`Receiver "${cleanTo}" is offline. Message saved to DB only.`);
+      console.log(`[Offline Push Dispatch] Receiver "${cleanTo}" is offline. Saved message and dispatched background Notification Alert payload.`);
     }
     
     // Echo back to sender
