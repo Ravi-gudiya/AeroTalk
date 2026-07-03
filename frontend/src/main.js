@@ -729,6 +729,7 @@ async function searchUsersByEmail(query) {
         } else if (relation.status === 'accepted') {
           li.querySelector('.message-friend-btn').addEventListener('click', (e) => {
             e.stopPropagation();
+            switchDockTab('chats');
             openChatWindow('direct', u.email);
             searchResults.classList.add('hidden');
           });
@@ -1608,8 +1609,8 @@ function updateFriendsUI() {
 
         li.addEventListener('click', () => {
           if (relation && relation.status === 'accepted') {
-            openChatWindow('direct', u.email);
             switchDockTab('chats');
+            openChatWindow('direct', u.email);
           } else {
             alert(`Send a friend request to ${u.username} to start chatting!`);
           }
@@ -1645,8 +1646,8 @@ function updateGroupsUI() {
     `;
 
     li.addEventListener('click', () => {
-      openChatWindow('group', g.id);
       switchDockTab('chats');
+      openChatWindow('group', g.id);
     });
 
     groupsListEl.appendChild(li);
