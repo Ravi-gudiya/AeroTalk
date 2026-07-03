@@ -1393,7 +1393,8 @@ function appendMessageUI(msg) {
 
 function updateFriendsUI() {
   const friendsListEl = document.getElementById('friends-list');
-  const incomingReqList = document.getElementById('incoming-requests-list');
+  const incomingReqList = document.getElementById('modal-requests-list');
+  const reqCountEl = document.getElementById('pending-requests-count');
   
   if (friendsListEl) friendsListEl.innerHTML = '';
   if (incomingReqList) incomingReqList.innerHTML = '';
@@ -1401,50 +1402,74 @@ function updateFriendsUI() {
   const acceptedFriends = friendsList.filter(f => f.status === 'accepted');
   const pendingRequests = friendsList.filter(f => f.status === 'pending');
 
-  // 1. Render Requests (Incoming & Outgoing)
+  // Update Pending Requests Badge Count
+  if (reqCountEl) {
+    const incomingCount = pendingRequests.filter(f => f.role === 'receiver').length;
+    if (incomingCount > 0) {
+      reqCountEl.textContent = incomingCount;
+      reqCountEl.style.display = 'inline-block';
+    } else {
+      reqCountEl.style.display = 'none';
+    }
+  }
+
+  // 1. Render Requests (Incoming & Outgoing) inside Modal list
   if (incomingReqList) {
-    if (pendingRequests.length > 0) {
+    if (pendingRequests.length === 0) {
+      incomingReqList.innerHTML = `<div class="empty-state">No pending requests.</div>`;
+    } else {
       pendingRequests.forEach(f => {
         const div = document.createElement('div');
         div.className = 'request-card mb-2';
+        div.style = 'display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border);';
         
         const avatarStyle = f.avatarUrl 
           ? `style="background-image: url(${f.avatarUrl}); background-color: transparent" class="recent-avatar has-image"` 
-          : `style="background-color: ${f.avatarColor}" class="recent-avatar"`;
-        const avatarContent = f.avatarUrl ? '' : f.username.charAt(0).toUpperCase();
+          : `style="background-color: ${f.avatarColor || '#3b82f6'}" class="recent-avatar"`;
+        const avatarContent = f.avatarUrl ? '' : (f.username ? f.username.charAt(0).toUpperCase() : '?');
 
         if (f.role === 'receiver') {
           // Incoming: Avatar, Name, Accept, Decline
           div.innerHTML = `
-            <div class="request-details-col">
+            <div class="request-details-col" style="display: flex; gap: 10px; align-items: center;">
               <div ${avatarStyle}>${avatarContent}</div>
               <div class="recent-details">
-                <h3>${escapeHTML(f.username)}</h3>
-                <p>Mutual Friends: 0</p>
+                <h3 style="margin: 0; font-size: 0.85rem; font-weight: 700; color: #fff;">${escapeHTML(f.username)}</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.72rem; color: var(--text-secondary);">Sent you a request</p>
               </div>
             </div>
-            <div class="request-btn-actions">
-              <button class="btn-circle-action accept accept-friend-btn" title="Accept"><i data-lucide="check"></i></button>
-              <button class="btn-circle-action decline decline-friend-btn" title="Decline"><i data-lucide="x"></i></button>
+            <div class="request-btn-actions" style="display: flex; gap: 8px;">
+              <button class="btn btn-accent btn-sm-action accept-friend-btn" style="padding: 6px 12px; font-size: 0.72rem;">Accept</button>
+              <button class="btn btn-outline btn-sm-action decline-friend-btn" style="padding: 6px 12px; font-size: 0.72rem;">Decline</button>
             </div>
           `;
-          div.querySelector('.accept-friend-btn').addEventListener('click', () => acceptFriendRequest(f.email));
-          div.querySelector('.decline-friend-btn').addEventListener('click', () => declineFriendRequest(f.email));
+          div.querySelector('.accept-friend-btn').addEventListener('click', () => {
+            acceptFriendRequest(f.email);
+            // Auto close requests modal on action to keep flow smooth
+            document.getElementById('pending-requests-modal').classList.add('hidden');
+          });
+          div.querySelector('.decline-friend-btn').addEventListener('click', () => {
+            declineFriendRequest(f.email);
+            document.getElementById('pending-requests-modal').classList.add('hidden');
+          });
         } else {
           // Outgoing: Avatar, Pending badge, Cancel Request
           div.innerHTML = `
-            <div class="request-details-col">
+            <div class="request-details-col" style="display: flex; gap: 10px; align-items: center;">
               <div ${avatarStyle}>${avatarContent}</div>
               <div class="recent-details">
-                <h3>${escapeHTML(f.username)}</h3>
-                <p style="font-style: italic; color: var(--text-muted);">Pending request...</p>
+                <h3 style="margin: 0; font-size: 0.85rem; font-weight: 700; color: #fff;">${escapeHTML(f.username)}</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.72rem; font-style: italic; color: var(--text-muted);">Request sent...</p>
               </div>
             </div>
             <div class="request-btn-actions">
-              <button class="btn btn-outline btn-sm-action cancel-friend-btn" style="font-size: 0.68rem; padding: 4px 8px;">Cancel</button>
+              <button class="btn btn-outline btn-sm-action cancel-friend-btn" style="font-size: 0.68rem; padding: 6px 12px;">Cancel</button>
             </div>
           `;
-          div.querySelector('.cancel-friend-btn').addEventListener('click', () => declineFriendRequest(f.email));
+          div.querySelector('.cancel-friend-btn').addEventListener('click', () => {
+            declineFriendRequest(f.email);
+            document.getElementById('pending-requests-modal').classList.add('hidden');
+          });
         }
         incomingReqList.appendChild(div);
       });
@@ -3441,6 +3466,81 @@ function setupThemeCreatorAndCustomizers() {
       switchDockTab('vibe');
       const shareMomentCheckbox = document.getElementById('share-as-moment');
       if (shareMomentCheckbox) shareMomentCheckbox.checked = true;
+    });
+  }
+
+  // --- Friend Request Modals UI Bindings ---
+  const friendReqModal = document.getElementById('friend-request-modal');
+  const showAddFriendBtn = document.getElementById('show-add-friend-btn');
+  const closeFriendReqModal = document.getElementById('close-friend-request-modal');
+  const sendFriendReqSubmit = document.getElementById('send-friend-request-submit');
+  const requestEmailInput = document.getElementById('request-email-input');
+
+  if (showAddFriendBtn && friendReqModal) {
+    showAddFriendBtn.addEventListener('click', () => {
+      friendReqModal.classList.remove('hidden');
+      if (requestEmailInput) {
+        requestEmailInput.value = '';
+        requestEmailInput.focus();
+      }
+    });
+  }
+
+  if (closeFriendReqModal && friendReqModal) {
+    closeFriendReqModal.addEventListener('click', () => {
+      friendReqModal.classList.add('hidden');
+    });
+  }
+
+  if (sendFriendReqSubmit) {
+    sendFriendReqSubmit.addEventListener('click', async () => {
+      const email = requestEmailInput.value.trim();
+      if (!email) return alert("Please enter a valid email address!");
+
+      sendFriendReqSubmit.disabled = true;
+      sendFriendReqSubmit.textContent = "Sending Request...";
+
+      try {
+        const res = await apiFetch('/api/friends/request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ targetEmail: email })
+        });
+
+        const data = await res.json();
+        if (res.status === 200 && !data.error) {
+          alert("Friend request sent successfully!");
+          friendReqModal.classList.add('hidden');
+          fetchFriends(); // Refresh lists
+        } else {
+          alert(data.error || "Failed to send friend request. Check the email.");
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        sendFriendReqSubmit.disabled = false;
+        sendFriendReqSubmit.textContent = "Send Friend Request";
+      }
+    });
+  }
+
+  const pendingReqModal = document.getElementById('pending-requests-modal');
+  const showPendingRequestsBtn = document.getElementById('show-pending-requests-btn');
+  const closePendingRequestsModal = document.getElementById('close-pending-requests-modal');
+
+  if (showPendingRequestsBtn && pendingReqModal) {
+    showPendingRequestsBtn.addEventListener('click', () => {
+      updateFriendsUI(); // Re-render requests inside the modal lists
+      pendingReqModal.classList.remove('hidden');
+    });
+  }
+
+  if (closePendingRequestsModal && pendingReqModal) {
+    closePendingRequestsModal.addEventListener('click', () => {
+      pendingReqModal.classList.add('hidden');
     });
   }
 }

@@ -228,36 +228,16 @@
           </div>
         </section>
 
-        <!-- Mood Selector state switcher -->
-        <section class="section mood-selector-section">
-          <label class="section-label">Your Mood</label>
-          <div class="mood-chips" id="mood-selector-container">
-            <button class="mood-chip active" data-mood="cosmic">🌌 Cosmic</button>
-            <button class="mood-chip" data-mood="focused">🎯 Focused</button>
-            <button class="mood-chip" data-mood="relaxed">🌴 Relaxed</button>
-            <button class="mood-chip" data-mood="nebula">🔮 Nebula</button>
-          </div>
-        </section>
-
-        <!-- Vibes story rings (PWA Statuses) -->
-        <section class="section vibes-story-section">
-          <label class="section-label">Active Vibes</label>
-          <div class="vibes-ring-container">
-            <div class="vibe-story-ring active-ring" title="Alex Vibe">
-              <div class="vibe-avatar" style="background-color: var(--primary-color)">A</div>
-              <span class="vibe-ring-tag">🌌</span>
-            </div>
-            <div class="vibe-story-ring active-ring" title="Taylor Vibe">
-              <div class="vibe-avatar" style="background-color: var(--secondary-color)">T</div>
-              <span class="vibe-ring-tag">🎯</span>
-            </div>
-            <div class="vibe-story-ring active-ring" title="Jordan Vibe">
-              <div class="vibe-avatar" style="background-color: var(--accent-color)">J</div>
-              <span class="vibe-ring-tag">🔮</span>
-            </div>
-            <div class="vibe-story-ring" title="Add Vibe">
-              <div class="vibe-avatar plus-vibe"><i data-lucide="plus"></i></div>
-            </div>
+        <!-- Friends Quick Management Dashboard -->
+        <section class="section friend-management-bar mt-2 mb-2">
+          <div class="friend-actions-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button id="show-add-friend-btn" class="btn btn-outline btn-sm-action" style="padding: 10px; font-size: 0.78rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <i data-lucide="user-plus"></i> Add Friend
+            </button>
+            <button id="show-pending-requests-btn" class="btn btn-outline btn-sm-action" style="padding: 10px; font-size: 0.78rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; position: relative;">
+              <i data-lucide="bell"></i> Requests
+              <span class="badge" id="pending-requests-count" style="display:none; position: absolute; top: -5px; right: -5px; background: var(--accent-color); color: #fff; font-size: 0.62rem; padding: 2px 6px; border-radius: 50%; font-weight: 700;"></span>
+            </button>
           </div>
         </section>
 
@@ -1213,6 +1193,39 @@
             </ul>
           </div>
           <button id="create-group-submit" class="btn btn-accent">Create Group</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Send Friend Request Modal -->
+    <div id="friend-request-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <header class="modal-header">
+          <h3>Add Friend</h3>
+          <button id="close-friend-request-modal" class="icon-btn-inline"><i data-lucide="x"></i></button>
+        </header>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="request-email-input">Friend User Email</label>
+            <input type="text" id="request-email-input" placeholder="Enter friend's email...">
+          </div>
+          <button id="send-friend-request-submit" class="btn btn-accent w-100 mt-3" style="padding: 12px; font-weight: 700;">Send Friend Request</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Requests Modal -->
+    <div id="pending-requests-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <header class="modal-header">
+          <h3>Pending Friend Requests</h3>
+          <button id="close-pending-requests-modal" class="icon-btn-inline"><i data-lucide="x"></i></button>
+        </header>
+        <div class="modal-body">
+          <p class="small-text text-muted mb-3">Accept or decline incoming friend invitations below.</p>
+          <div id="modal-requests-list" class="requests-stack">
+            <div class="empty-state">No pending requests.</div>
+          </div>
         </div>
       </div>
     </div>
