@@ -324,13 +324,22 @@ function initializeRealtime() {
     const isIncoming = msg.from !== currentUser.email;
     const partnerEmail = isIncoming ? msg.from : msg.to;
     
-    // Trigger desktop/mobile OS native push alert notification if tab is hidden/minimized
-    if (isIncoming && document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-      const sender = peerNameMap[msg.from] || msg.from;
-      new Notification(`New Message from ${sender}`, {
-        body: msg.content.startsWith('<div') ? 'Shared an attachment/voice note' : msg.content,
-        icon: '/icon.jpg'
-      });
+    // Trigger desktop/mobile OS native push alert notification if user is not looking at this chat
+    const isCurrentlyChatting = activeChatType === 'direct' && activeChatId === msg.from;
+    if (isIncoming && (document.hidden || !isCurrentlyChatting)) {
+      const senderName = peerNameMap[msg.from] || msg.from;
+      const displayBody = msg.content.startsWith('<div') ? 'Shared an attachment/voice note' : msg.content;
+      
+      // 1. Browser Native desktop alert
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(`New Message from ${senderName}`, {
+          body: displayBody,
+          icon: '/icon.jpg'
+        });
+      }
+      
+      // 2. Spatial glass in-app toast notification popup
+      showInAppToast(senderName, displayBody);
     }
 
     // Save to active session cache
@@ -1666,7 +1675,7 @@ function setupUIEvents() {
     });
   }
 
-  const mobileTabs = ['chats', 'themes', 'pulse', 'profile'];
+  const mobileTabs = ['feed', 'vibe', 'pulse', 'profile'];
   mobileTabs.forEach(tabId => {
     const btn = document.getElementById(`mobile-nav-${tabId}`);
     if (btn) {
@@ -1677,8 +1686,9 @@ function setupUIEvents() {
   const mobileCreateBtn = document.getElementById('mobile-nav-create');
   if (mobileCreateBtn) {
     mobileCreateBtn.addEventListener('click', () => {
-      const postModal = document.getElementById('post-modal');
-      if (postModal) postModal.classList.remove('hidden');
+      switchDockTab('vibe');
+      const shareMomentCheckbox = document.getElementById('share-as-moment');
+      if (shareMomentCheckbox) shareMomentCheckbox.checked = true;
     });
   }
 
@@ -2659,10 +2669,7 @@ function switchDockTab(tabId) {
   // Sync mobile bottom-nav tabs
   document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
   
-  let mobileBtnId = `mobile-nav-${tabId}`;
-  if (tabId === 'feed') mobileBtnId = 'mobile-nav-chats'; // Home tab on mobile bottom nav
-  if (tabId === 'vibe') mobileBtnId = 'mobile-nav-themes'; // Vibes tab on mobile bottom nav
-  
+  const mobileBtnId = `mobile-nav-${tabId}`;
   const activeMobileBtn = document.getElementById(mobileBtnId);
   if (activeMobileBtn) activeMobileBtn.classList.add('active');
 
@@ -3494,4 +3501,46 @@ async function fetchMoments() {
   } catch (err) {
     console.error('[Moments Engine] Error fetching stories', err);
   }
+}
+
+// Display in-app glassmorphic alert notifications
+function showInAppToast(sender, text) {
+  let toastContainer = document.getElementById('in-app-toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'in-app-toast-container';
+    toastContainer.style = 'position: fixed; top: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'glass-panel card';
+  toast.style = 'padding: 16px 20px; min-width: 280px; max-width: 360px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(18, 24, 39, 0.95); backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); pointer-events: auto; animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;';
+  
+  toast.innerHTML = `
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <div class="avatar" style="width: 36px; height: 36px; background-color: var(--secondary-color); font-size: 0.8rem; font-weight: 700; color:#fff; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+        ${sender[0].toUpperCase()}
+      </div>
+      <div style="flex-grow: 1;">
+        <h4 style="margin: 0; font-size: 0.85rem; font-weight: 700; color: #fff;">${sender}</h4>
+        <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${text}</p>
+      </div>
+    </div>
+  `;
+  
+  toastContainer.appendChild(toast);
+  
+  // Play message arrival sound effect
+  if (window.SoundEffects) {
+    window.SoundEffects.playMessageReceived();
+  }
+  
+  // Remove toast container after slide-out animation delay
+  setTimeout(() => {
+    toast.style.animation = 'slideOutToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 4000);
 }

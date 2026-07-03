@@ -308,7 +308,8 @@ app.post('/api/feed', authenticateToken, async (req, res) => {
   }
   
   const user = await DB.findUserByEmail(req.user.email);
-  const post = await DB.createPost(req.user.email, user.username, user.avatarUrl || null, imageUrl, caption, isMoment || false);
+  const isMomentBool = isMoment === true || isMoment === 'true';
+  const post = await DB.createPost(req.user.email, user.username, user.avatarUrl || null, imageUrl, caption, isMomentBool);
   
   // Real-time broadcast of new social post
   io.emit('new_feed_post', post);

@@ -748,12 +748,12 @@ export const DB = {
 
     const cutOffTime = Date.now() - 24 * 60 * 60 * 1000; // 24 Hours Expiry Limit
 
-    // Retrieve active moments and strip prefix in captions
+    // Retrieve active moments and strip prefix in captions safely
     return posts
       .filter(p => p.isMoment && p.timestamp >= cutOffTime)
       .map(p => ({
         ...p,
-        caption: p.caption.replace('[MOMENT]', '')
+        caption: p.caption ? p.caption.replace('[MOMENT]', '') : ''
       }));
   },
 
