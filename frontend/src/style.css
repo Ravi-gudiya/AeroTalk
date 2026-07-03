@@ -863,13 +863,32 @@ body::after {
 
 /* CHAT INPUT FOOTER & FILE ATTACHMENTS PREVIEW */
 .chat-footer {
-  padding: 16px 24px;
+  padding: 12px 16px;
   background: rgba(21, 23, 33, 0.45);
   border-top: 1px solid var(--panel-border);
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   position: relative;
+  width: 100%;
+}
+
+#chat-input {
+  flex-grow: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--panel-border);
+  border-radius: 22px;
+  padding: 10px 16px;
+  color: #fff;
+  font-size: 0.88rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+#chat-input:focus {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .attach-btn {
@@ -884,6 +903,7 @@ body::after {
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-smooth);
+  flex-shrink: 0;
 }
 
 .attach-btn:hover {
@@ -903,6 +923,7 @@ body::after {
   align-items: center;
   justify-content: center;
   transition: var(--transition-smooth);
+  flex-shrink: 0;
 }
 
 .send-btn:hover {
@@ -3860,6 +3881,24 @@ kbd {
   }
   .chat-main-area {
     border-right: none !important;
+  }
+  .chat-footer {
+    padding: 10px 12px !important;
+    gap: 6px !important;
+  }
+  .chat-footer .attach-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+  }
+  .chat-footer .send-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+  }
+  #chat-input {
+    padding: 8px 12px !important;
+    font-size: 0.82rem !important;
   }
 }
 
