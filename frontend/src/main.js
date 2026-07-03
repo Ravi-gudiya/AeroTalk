@@ -27,6 +27,8 @@ let peer = null;
 let activeChatId = null; // Can be email (1-to-1) or groupId (group)
 let activeChatType = null; // 'direct' or 'group'
 let friendsList = [];
+let allUsersList = []; // Single unified list of all registered users
+let unreadCounts = {}; // Track unread direct message counts
 let groupsList = [];
 let activeChats = []; // Emails/groupIDs with recent chat sessions
 let peerNameMap = {}; // Maps email -> username for display
@@ -300,14 +302,19 @@ function initializeRealtime() {
     const friend = friendsList.find(f => f.email === email);
     if (friend) {
       friend.isOnline = isOnline;
-      if (lastSeen) {
-        friend.lastSeen = lastSeen;
-      }
-      updateFriendsUI();
-      updateActiveChatsUI();
-      if (activeChatType === 'direct' && activeChatId === email) {
-        updateChatHeaderPresence(isOnline, friend.lastSeen);
-      }
+      if (lastSeen) friend.lastSeen = lastSeen;
+    }
+
+    const user = allUsersList.find(u => u.email === email);
+    if (user) {
+      user.isOnline = isOnline;
+      if (lastSeen) user.lastSeen = lastSeen;
+    }
+
+    updateFriendsUI();
+    updateActiveChatsUI();
+    if (activeChatType === 'direct' && activeChatId === email) {
+      updateChatHeaderPresence(isOnline, (friend && friend.lastSeen) || (user && user.lastSeen));
     }
   });
 
@@ -436,6 +443,12 @@ async function fetchFriends() {
       peerAvatarMap[f.email] = f.avatarColor;
       peerAvatarUrlMap[f.email] = f.avatarUrl || null;
     });
+
+    // Fetch all users for Unified Members List
+    const allUsersRes = await apiFetch('/api/users/search?q=', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    allUsersList = await allUsersRes.json();
 
     updateFriendsUI();
     updateActiveChatsUI();
@@ -665,23 +678,61 @@ async function searchUsersByEmail(query) {
       users.forEach(u => {
         const li = document.createElement('li');
         li.className = 'search-item';
+        li.style = 'padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border);';
+
+        const relation = friendsList.find(f => f.email === u.email);
+        let actionHTML = '';
+
+        if (relation) {
+          if (relation.status === 'accepted') {
+            actionHTML = `
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span class="badge" style="background: rgba(0, 230, 195, 0.1); color: var(--secondary-color); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-weight:700;">Friend</span>
+                <button class="icon-btn-inline message-friend-btn" title="Message"><i data-lucide="message-square" style="width: 16px;"></i></button>
+              </div>
+            `;
+          } else {
+            actionHTML = `<span class="badge" style="background: rgba(255, 61, 170, 0.1); color: var(--accent-color); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-weight:700;">Pending</span>`;
+          }
+        } else {
+          actionHTML = `
+            <button class="icon-btn-inline add-friend-action" title="Add Friend">
+              <i data-lucide="user-plus" class="small-icon"></i>
+            </button>
+          `;
+        }
+
+        const avatarStyle = u.avatarUrl 
+          ? `style="background-image: url(${u.avatarUrl}); background-color: transparent" class="search-avatar has-image"` 
+          : `style="background-color: ${u.avatarColor || '#7c3aed'}" class="search-avatar"`;
+        const avatarContent = u.avatarUrl ? '' : u.username.charAt(0).toUpperCase();
+
         li.innerHTML = `
-          <div class="search-info">
-            <div class="search-avatar" style="background-color: ${u.avatarColor}">${u.username.charAt(0).toUpperCase()}</div>
+          <div class="search-info" style="display: flex; gap: 10px; align-items: center;">
+            <div ${avatarStyle}>${avatarContent}</div>
             <div class="search-meta">
-              <h4>${escapeHTML(u.username)}</h4>
-              <p>${escapeHTML(u.email)}</p>
+              <h4 style="margin: 0; font-size: 0.85rem; color: #fff;">${escapeHTML(u.username)}</h4>
+              <p style="margin: 2px 0 0 0; font-size: 0.72rem; color: var(--text-secondary);">${escapeHTML(u.email)}</p>
             </div>
           </div>
-          <button class="icon-btn-inline add-friend-action" title="Add Friend">
-            <i data-lucide="user-plus" class="small-icon"></i>
-          </button>
+          <div class="search-actions-col">
+            ${actionHTML}
+          </div>
         `;
 
-        li.querySelector('.add-friend-action').addEventListener('click', async (e) => {
-          e.stopPropagation();
-          await sendFriendRequest(u.email);
-        });
+        if (!relation) {
+          li.querySelector('.add-friend-action').addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await sendFriendRequest(u.email);
+            searchUsersByEmail(query);
+          });
+        } else if (relation.status === 'accepted') {
+          li.querySelector('.message-friend-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openChatWindow('direct', u.email);
+            searchResults.classList.add('hidden');
+          });
+        }
 
         searchResults.appendChild(li);
       });
@@ -1194,6 +1245,9 @@ function openChatWindow(type, id) {
   chatBlankState.classList.add('hidden');
   chatActiveWindow.classList.remove('hidden');
   
+  unreadCounts[id] = 0;
+  updateFriendsUI();
+  
   if (type === 'direct') {
     const partner = friendsList.find(f => f.email === id);
     const displayName = partner ? partner.username : id;
@@ -1412,7 +1466,6 @@ function updateFriendsUI() {
           `;
           div.querySelector('.accept-friend-btn').addEventListener('click', () => {
             acceptFriendRequest(f.email);
-            // Auto close requests modal on action to keep flow smooth
             document.getElementById('pending-requests-modal').classList.add('hidden');
           });
           div.querySelector('.decline-friend-btn').addEventListener('click', () => {
@@ -1443,68 +1496,123 @@ function updateFriendsUI() {
     }
   }
 
-  // 2. Render Friends Directory List
+  // 2. Render Unified Members & Chats List
   if (friendsListEl) {
-    if (acceptedFriends.length === 0) {
-      friendsListEl.innerHTML = `<li class="empty-state">No friends added yet. Search above to add.</li>`;
+    if (allUsersList.length === 0) {
+      friendsListEl.innerHTML = `<li class="empty-state">No members found.</li>`;
     } else {
-      acceptedFriends.forEach(f => {
+      // Sort: pinned first, then online first, then alphabetical
+      const localPinned = JSON.parse(localStorage.getItem(`aerotalk_pinned_chats_${currentUser.email}`) || '[]');
+      const sortedUsers = [...allUsersList].sort((a, b) => {
+        const aPinned = localPinned.includes(a.email) ? 1 : 0;
+        const bPinned = localPinned.includes(b.email) ? 1 : 0;
+        if (aPinned !== bPinned) return bPinned - aPinned;
+
+        const aOnline = a.isOnline ? 1 : 0;
+        const bOnline = b.isOnline ? 1 : 0;
+        if (aOnline !== bOnline) return bOnline - aOnline;
+
+        return a.username.localeCompare(b.username);
+      });
+
+      sortedUsers.forEach(u => {
+        if (u.email === currentUser.email) return;
+
         const li = document.createElement('li');
-        li.className = 'recent-item';
+        li.className = `recent-item ${u.email === activeChatId ? 'active' : ''}`;
+        li.style = 'padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); cursor: pointer; position: relative; transition: background 0.2s ease;';
 
-        const avatarStyle = f.avatarUrl 
-          ? `style="background-image: url(${f.avatarUrl}); background-color: transparent" class="recent-avatar has-image"` 
-          : `style="background-color: ${f.avatarColor}" class="recent-avatar"`;
-        const avatarContent = f.avatarUrl ? '' : f.username.charAt(0).toUpperCase();
+        const relation = friendsList.find(f => f.email === u.email);
+        const isOnline = u.isOnline || false;
+        const isPinned = localPinned.includes(u.email);
 
-        const statusText = f.isOnline ? 'Online' : formatLastSeen(f.lastSeen);
-        const statusColor = f.isOnline ? 'var(--success-color)' : 'var(--text-muted)';
-        
+        const unreadCount = unreadCounts[u.email] || 0;
+        const unreadBadgeHTML = unreadCount > 0 
+          ? `<span class="badge" style="background: var(--success-color); color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: 700; margin-left: auto;">${unreadCount}</span>` 
+          : '';
+
+        const isVerified = u.email === 'bob@aerotalk.com' || u.email.endsWith('@aerotalk.com');
+        const verifiedHTML = isVerified 
+          ? `<span class="verified-badge" title="Verified Member" style="color: var(--secondary-color); font-size: 0.8rem; margin-left: 4px;"><i data-lucide="check-circle" style="width: 14px; display: inline-block;"></i></span>` 
+          : '';
+
+        const avatarStyle = u.avatarUrl 
+          ? `style="background-image: url(${u.avatarUrl}); background-color: transparent" class="recent-avatar has-image"` 
+          : `style="background-color: ${u.avatarColor || '#7c3aed'}" class="recent-avatar"`;
+        const avatarContent = u.avatarUrl ? '' : u.username.charAt(0).toUpperCase();
+
+        const statusText = isOnline ? 'Online' : (u.lastSeen ? formatLastSeen(u.lastSeen) : 'Offline');
+        const statusColor = isOnline ? 'var(--success-color)' : 'var(--text-secondary)';
+
+        let relationColHTML = '';
+        if (relation) {
+          if (relation.status === 'accepted') {
+            relationColHTML = `
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="icon-btn-inline pin-chat-btn" title="${isPinned ? 'Unpin' : 'Pin'} Chat" style="color: ${isPinned ? 'var(--accent-color)' : 'var(--text-secondary)'};">
+                  <i data-lucide="pin" style="width: 14px;"></i>
+                </button>
+                <i data-lucide="message-square" style="width: 14px; color: var(--secondary-color);"></i>
+              </div>
+            `;
+          } else {
+            relationColHTML = `<span class="badge" style="background: rgba(255, 61, 170, 0.1); color: var(--accent-color); font-size: 0.62rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">Pending</span>`;
+          }
+        } else {
+          relationColHTML = `
+            <button class="icon-btn-inline add-friend-btn" title="Add Friend" style="color: var(--secondary-color);">
+              <i data-lucide="user-plus" style="width: 16px;"></i>
+            </button>
+          `;
+        }
+
         li.innerHTML = `
-          <div class="recent-info-row">
+          <div class="recent-info-row" style="display: flex; gap: 12px; align-items: center; flex-grow: 1;">
             <div ${avatarStyle}>
               ${avatarContent}
-              <span class="recent-indicator ${f.isOnline ? 'online' : ''}"></span>
+              <span class="recent-indicator" style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #161c2d; background-color: ${isOnline ? 'var(--success-color)' : '#94a3b8'};"></span>
             </div>
             <div class="recent-details">
-              <h3>${escapeHTML(f.username)}</h3>
-              <p style="font-size: 0.72rem; margin-top: 2px; color: ${statusColor};">${statusText}</p>
+              <h3 style="margin: 0; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; color: #fff;">
+                ${escapeHTML(u.username)}
+                ${verifiedHTML}
+              </h3>
+              <p style="margin: 2px 0 0 0; font-size: 0.72rem; color: ${statusColor};">${statusText}</p>
             </div>
+            ${unreadBadgeHTML}
           </div>
-          <div class="recent-actions hover-actions-drawer">
-            <button class="icon-btn-inline open-friend-chat" title="Message">
-              <i data-lucide="message-square" class="small-icon"></i>
-            </button>
-            <button class="icon-btn-inline start-voice-call" title="Voice Call">
-              <i data-lucide="phone" class="small-icon"></i>
-            </button>
-            <button class="icon-btn-inline start-video-call" title="Video Call">
-              <i data-lucide="video" class="small-icon"></i>
-            </button>
+          <div class="members-actions-col" style="display: flex; align-items: center; gap: 8px; margin-left: 10px;">
+            ${relationColHTML}
           </div>
         `;
 
-        // Bind chat click
-        li.querySelector('.open-friend-chat').addEventListener('click', (e) => {
-          e.stopPropagation();
-          openChatWindow('direct', f.email);
-          switchDockTab('chats');
-        });
-        li.querySelector('.start-voice-call').addEventListener('click', (e) => {
-          e.stopPropagation();
-          openChatWindow('direct', f.email);
-          initiateCall('audio');
-        });
-        li.querySelector('.start-video-call').addEventListener('click', (e) => {
-          e.stopPropagation();
-          openChatWindow('direct', f.email);
-          initiateCall('video');
-        });
+        if (!relation) {
+          li.querySelector('.add-friend-btn').addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await sendFriendRequest(u.email);
+            fetchFriends();
+          });
+        } else if (relation.status === 'accepted') {
+          li.querySelector('.pin-chat-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            let pins = JSON.parse(localStorage.getItem(`aerotalk_pinned_chats_${currentUser.email}`) || '[]');
+            if (isPinned) {
+              pins = pins.filter(p => p !== u.email);
+            } else {
+              pins.push(u.email);
+            }
+            localStorage.setItem(`aerotalk_pinned_chats_${currentUser.email}`, JSON.stringify(pins));
+            updateFriendsUI();
+          });
+        }
 
-        // Click whole row opens chat
         li.addEventListener('click', () => {
-          openChatWindow('direct', f.email);
-          switchDockTab('chats');
+          if (relation && relation.status === 'accepted') {
+            openChatWindow('direct', u.email);
+            switchDockTab('chats');
+          } else {
+            alert(`Send a friend request to ${u.username} to start chatting!`);
+          }
         });
 
         friendsListEl.appendChild(li);
@@ -1547,63 +1655,7 @@ function updateGroupsUI() {
 }
 
 function updateActiveChatsUI() {
-  activeChatsList.innerHTML = '';
-  if (activeChats.length === 0) {
-    activeChatsList.innerHTML = `<li class="empty-state">No active chats. Find a friend to connect.</li>`;
-    return;
-  }
-
-  activeChats.forEach(id => {
-    const isGroup = id.startsWith('grp_');
-    const li = document.createElement('li');
-    li.className = `recent-item ${id === activeChatId ? 'active' : ''}`;
-
-    if (isGroup) {
-      const group = groupsList.find(g => g.id === id);
-      const name = group ? group.name : 'Group Chat';
-      li.innerHTML = `
-        <div class="recent-info-row">
-          <div class="recent-avatar" style="background-color: var(--primary-color)">
-            ${name.charAt(0).toUpperCase()}
-          </div>
-          <div class="recent-details">
-            <h3>${escapeHTML(name)}</h3>
-            <p>Group Workspace</p>
-          </div>
-        </div>
-      `;
-    } else {
-      const friend = friendsList.find(f => f.email === id);
-      const name = friend ? friend.username : id;
-      const isOnline = friend ? friend.isOnline : false;
-      const avatarColor = friend ? friend.avatarColor : 'var(--primary-color)';
-      const avatarUrl = peerAvatarUrlMap[id] || (friend ? friend.avatarUrl : null);
-      
-      const hasAvatarImg = avatarUrl ? `style="background-image: url(${avatarUrl}); background-color: transparent" class="recent-avatar has-image"` : `style="background-color: ${avatarColor}" class="recent-avatar"`;
-      const avatarContent = avatarUrl ? '' : name.charAt(0).toUpperCase();
-
-      li.innerHTML = `
-        <div class="recent-info-row">
-          <div ${hasAvatarImg}>
-            ${avatarContent}
-            <span class="recent-indicator ${isOnline ? 'online' : ''}"></span>
-          </div>
-          <div class="recent-details">
-            <h3>${escapeHTML(name)}</h3>
-            <p>${escapeHTML(id)}</p>
-          </div>
-        </div>
-      `;
-    }
-
-    li.addEventListener('click', () => {
-      openChatWindow(isGroup ? 'group' : 'direct', id);
-      updateActiveChatsUI();
-    });
-
-    activeChatsList.appendChild(li);
-  });
-  window.lucide.createIcons();
+  updateFriendsUI();
 }
 
 // Save active chat tabs locally
@@ -1662,8 +1714,15 @@ function setupUIEvents() {
   if (mobileBackBtn) {
     mobileBackBtn.addEventListener('click', () => {
       const appEl = document.getElementById('app');
-      appEl.classList.remove('show-chat-viewport');
-      appEl.classList.add('show-sidebar-drawer');
+      if (appEl) {
+        appEl.classList.remove('show-chat-viewport');
+        appEl.classList.add('show-sidebar-drawer');
+      }
+      chatActiveWindow.classList.add('hidden');
+      chatBlankState.classList.remove('hidden');
+      activeChatId = null;
+      activeChatType = null;
+      updateFriendsUI();
     });
   }
 
@@ -1804,6 +1863,17 @@ function setupUIEvents() {
       filePreviewCard.classList.remove('hidden');
     }
   });
+
+  const imgInput = document.getElementById('image-upload-input');
+  if (imgInput) {
+    imgInput.addEventListener('change', () => {
+      if (imgInput.files.length > 0) {
+        selectedFile = imgInput.files[0];
+        filePreviewName.textContent = selectedFile.name;
+        filePreviewCard.classList.remove('hidden');
+      }
+    });
+  }
 
   cancelUploadBtn.addEventListener('click', resetFileUpload);
 
