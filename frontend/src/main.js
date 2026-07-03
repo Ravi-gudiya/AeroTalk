@@ -1275,9 +1275,17 @@ function updateChatHeaderPresence(isOnline, lastSeen = null) {
 }
 
 function appendMessageUI(msg) {
+  const container = document.createElement('div');
+  container.className = `message-container ${msg.from === currentUser.email ? 'outgoing' : 'incoming'}`;
+  container.style.position = 'relative';
+  container.style.display = 'flex';
+  container.style.justifyContent = msg.from === currentUser.email ? 'flex-end' : 'flex-start';
+  container.style.margin = '8px 0';
+
   const bubble = document.createElement('div');
   const isSelf = msg.from === currentUser.email;
   bubble.className = `message-bubble ${isSelf ? 'outgoing' : 'incoming'}`;
+  bubble.style.position = 'relative';
 
   const timeFormatted = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const senderName = isSelf ? 'You' : (peerNameMap[msg.from] || msg.from);
@@ -1297,13 +1305,55 @@ function appendMessageUI(msg) {
     `;
   }
 
+  let contentHtml = '';
+  if (msg.content) {
+    if (msg.content.startsWith('<div class="voice-waveform-container"')) {
+      contentHtml = `<div class="message-content">${msg.content}</div>`;
+    } else {
+      contentHtml = `<div class="message-content">${urlify(escapeHTML(msg.content))}</div>`;
+    }
+  }
+
   bubble.innerHTML = `
     ${fileHtml}
-    ${msg.content ? `<div class="message-content">${urlify(escapeHTML(msg.content))}</div>` : ''}
-    <div class="message-meta">${escapeHTML(senderName)} • ${timeFormatted}</div>
+    ${contentHtml}
+    <div class="message-meta" style="font-size: 0.65rem; opacity: 0.7; margin-top: 4px;">${escapeHTML(senderName)} • ${timeFormatted}</div>
   `;
 
-  chatMessages.appendChild(bubble);
+  // Reactions Toolbar
+  const reactionsToolbar = document.createElement('div');
+  reactionsToolbar.className = 'msg-reactions-toolbar';
+  reactionsToolbar.innerHTML = `
+    <button class="reaction-emoji-btn">❤️</button>
+    <button class="reaction-emoji-btn">👍</button>
+    <button class="reaction-emoji-btn">🔥</button>
+    <button class="reaction-emoji-btn">😆</button>
+    <button class="reaction-emoji-btn">😮</button>
+  `;
+
+  // Bind reactions click
+  reactionsToolbar.querySelectorAll('.reaction-emoji-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let badge = bubble.querySelector('.reaction-badge');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'reaction-badge';
+        badge.style.cssText = 'position: absolute; bottom: -8px; right: 12px; background: rgba(30, 41, 59, 0.95); border: 1px solid var(--panel-border); border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
+        bubble.appendChild(badge);
+      }
+      badge.textContent = btn.textContent;
+    });
+  });
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message';
+  wrapper.style.position = 'relative';
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(reactionsToolbar);
+
+  container.appendChild(wrapper);
+
+  chatMessages.appendChild(container);
   chatMessages.scrollTop = chatMessages.scrollHeight;
   window.lucide.createIcons();
 }
@@ -1592,13 +1642,21 @@ function setupUIEvents() {
     });
   }
 
-  const mobileTabs = ['chats', 'feed', 'skills', 'profile', 'admin'];
+  const mobileTabs = ['chats', 'themes', 'pulse', 'profile'];
   mobileTabs.forEach(tabId => {
     const btn = document.getElementById(`mobile-nav-${tabId}`);
     if (btn) {
       btn.addEventListener('click', () => switchDockTab(tabId));
     }
   });
+
+  const mobileCreateBtn = document.getElementById('mobile-nav-create');
+  if (mobileCreateBtn) {
+    mobileCreateBtn.addEventListener('click', () => {
+      const postModal = document.getElementById('post-modal');
+      if (postModal) postModal.classList.remove('hidden');
+    });
+  }
 
   // Auth Form Toggle Buttons
   showRegisterBtn.addEventListener('click', (e) => {
@@ -2000,6 +2058,8 @@ function setupUIEvents() {
   const dockSkills = document.getElementById('dock-skills-btn');
   const dockThemes = document.getElementById('dock-themes-btn');
   const dockAdmin = document.getElementById('dock-admin-btn');
+  const dockPulse = document.getElementById('dock-pulse-btn');
+  const dockAihub = document.getElementById('dock-aihub-btn');
 
   if (dockChats) dockChats.addEventListener('click', () => switchDockTab('chats'));
   if (dockFeed) dockFeed.addEventListener('click', () => switchDockTab('feed'));
@@ -2008,6 +2068,8 @@ function setupUIEvents() {
   if (dockSkills) dockSkills.addEventListener('click', () => switchDockTab('skills'));
   if (dockThemes) dockThemes.addEventListener('click', () => switchDockTab('themes'));
   if (dockAdmin) dockAdmin.addEventListener('click', () => switchDockTab('admin'));
+  if (dockPulse) dockPulse.addEventListener('click', () => switchDockTab('pulse'));
+  if (dockAihub) dockAihub.addEventListener('click', () => switchDockTab('aihub'));
 
   // Profiles Edit bio forms
   const editProfileBtn = document.getElementById('edit-profile-btn');
@@ -2291,6 +2353,135 @@ function setupUIEvents() {
       btn.textContent = "Added";
     });
   });
+
+  // --- AeroTalk Futuristic UI Redesign Interactive Bindings ---
+
+  // Mood selector chips click handler
+  const moodChips = document.querySelectorAll('.mood-chip');
+  moodChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      moodChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const moodSelected = chip.getAttribute('data-mood');
+      console.log('User mood updated:', moodSelected);
+      
+      if (socket && socket.connected) {
+        socket.emit('mood_update', { mood: moodSelected });
+      }
+    });
+  });
+
+  // Stickers selector panel toggling
+  const chatStickerBtn = document.getElementById('chat-sticker-btn');
+  const stickersPanel = document.getElementById('stickers-panel');
+  const closeStickersBtn = document.getElementById('close-stickers-btn');
+
+  if (chatStickerBtn && stickersPanel) {
+    chatStickerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stickersPanel.classList.toggle('hidden');
+    });
+  }
+  if (closeStickersBtn && stickersPanel) {
+    closeStickersBtn.addEventListener('click', () => {
+      stickersPanel.classList.add('hidden');
+    });
+  }
+  // Close stickers panel when clicking outside
+  document.addEventListener('click', (e) => {
+    if (stickersPanel && !stickersPanel.classList.contains('hidden') && !stickersPanel.contains(e.target) && e.target !== chatStickerBtn) {
+      stickersPanel.classList.add('hidden');
+    }
+  });
+
+  // Send Sticker on click
+  document.querySelectorAll('.sticker-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sticker = btn.getAttribute('data-sticker');
+      if (sticker && activeChatId) {
+        chatInput.value = sticker;
+        handleSendMessage();
+        if (stickersPanel) stickersPanel.classList.add('hidden');
+      } else {
+        alert("Select a chat first to send a sticker!");
+      }
+    });
+  });
+
+  // Mic Waveform Simulator trigger
+  const chatVoiceBtn = document.getElementById('chat-voice-btn');
+  if (chatVoiceBtn) {
+    chatVoiceBtn.addEventListener('click', () => {
+      if (activeChatId) {
+        const voiceMessageHtml = `
+          <div class="voice-waveform-container">
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+          </div>
+          <span class="voice-duration" style="font-size:0.7rem; font-weight:700; opacity:0.8; margin-left:8px;">0:08</span>
+        `;
+        chatInput.value = voiceMessageHtml.replace(/\s+/g, ' ').trim();
+        handleSendMessage();
+      } else {
+        alert("Select a chat first to send a simulated voice message!");
+      }
+    });
+  }
+
+  // AI Hub Widgets Actions
+  const aiHubBrainstormBtn = document.getElementById('ai-hub-btn-brainstorm');
+  const aiHubMoodBtn = document.getElementById('ai-hub-btn-mood');
+  const aiHubPostBtn = document.getElementById('ai-hub-btn-post');
+  const aiHubGrammarBtn = document.getElementById('ai-hub-btn-grammar');
+  
+  const aiHubOutputBox = document.getElementById('ai-hub-output-box');
+  const aiHubOutputText = document.getElementById('ai-hub-output-text');
+
+  const showAiHubOutput = (text) => {
+    if (aiHubOutputBox && aiHubOutputText) {
+      aiHubOutputBox.classList.remove('hidden');
+      aiHubOutputText.textContent = text;
+    }
+  };
+
+  if (aiHubBrainstormBtn) {
+    aiHubBrainstormBtn.addEventListener('click', () => {
+      showAiHubOutput("[Aero AI Brainstorm Engine] Cosmic Post Topics:\n\n1. The convergence of Quantum computing and Decentralized networks.\n2. Glassmorphism and the transition to Spatial UI layouts.\n3. Digital presence: why AI Twins will replace traditional email signatures.");
+    });
+  }
+
+  if (aiHubMoodBtn) {
+    aiHubMoodBtn.addEventListener('click', () => {
+      const activeInput = document.getElementById('chat-input').value.trim();
+      if (!activeInput) {
+        showAiHubOutput("[Aero AI Mood Sentiment] Type a message draft in the chat input area first to analyze its emotional tone!");
+      } else {
+        showAiHubOutput(`[Aero AI Mood Sentiment] Analyzed: "${activeInput}"\n\nTone Weight: Positive (85%), Creative (70%)\nDominant state: Cosmic excitement 🚀`);
+      }
+    });
+  }
+
+  if (aiHubPostBtn) {
+    aiHubPostBtn.addEventListener('click', () => {
+      showAiHubOutput("[Aero AI Post Draft] Ready to publish on the Universe Feed:\n\n'Stepping into the future of spatial design. AeroTalk's new Cosmic glassmorphic system makes networking feel like operating an interface from a nebula. #SpatialUI #CosmicOS 🌌'");
+    });
+  }
+
+  if (aiHubGrammarBtn) {
+    aiHubGrammarBtn.addEventListener('click', () => {
+      const activeInput = document.getElementById('chat-input');
+      if (activeInput && activeInput.value.trim()) {
+        const text = activeInput.value.trim();
+        showAiHubOutput(`[Aero AI Grammar Engine] Analyzed: "${text}"\n\nOptimized Rewrite: "I checked the live server logs; it looks flawless!"`);
+      } else {
+        showAiHubOutput("[Aero AI Grammar Engine] Active chat input buffer is empty. Type a draft to analyze grammar.");
+      }
+    });
+  }
 }
 
 // HTML Escaper

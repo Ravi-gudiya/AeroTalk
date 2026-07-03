@@ -161,41 +161,40 @@
       </div>
 
       <nav class="sidebar-navigation-items">
-        <button class="nav-item-btn" id="dock-home-btn" title="Home Hub">
+        <button class="nav-item-btn active" id="dock-chats-btn" title="Home Hub">
           <i data-lucide="home"></i>
           <span class="nav-label">Home</span>
         </button>
-        <button class="nav-item-btn active" id="dock-chats-btn" title="Conversations">
-          <i data-lucide="message-square"></i>
-          <span class="nav-label">Chat</span>
-          <span class="nav-badge" id="unread-chats-badge"></span>
+        <button class="nav-item-btn" id="dock-themes-btn" title="User Vibes">
+          <i data-lucide="aperture"></i>
+          <span class="nav-label">Vibes</span>
         </button>
-        <button class="nav-item-btn" id="dock-feed-btn" title="Social Feed">
-          <i data-lucide="rss"></i>
-          <span class="nav-label">Feed</span>
+        <button class="nav-item-btn" id="dock-feed-btn" title="Universe Feed">
+          <i data-lucide="globe"></i>
+          <span class="nav-label">Universe</span>
         </button>
-        <button class="nav-item-btn" id="dock-dreams-btn" title="Communities">
-          <i data-lucide="target"></i>
-          <span class="nav-label">Communities</span>
+        <button class="nav-item-btn" id="dock-dreams-btn" title="Circles & Rooms">
+          <i data-lucide="layers"></i>
+          <span class="nav-label">Circles</span>
         </button>
-        <button class="nav-item-btn" id="dock-skills-btn" title="Discover Matches">
+        <button class="nav-item-btn" id="dock-skills-btn" title="Explore Discover">
           <i data-lucide="compass"></i>
-          <span class="nav-label">Discover</span>
+          <span class="nav-label">Explore</span>
         </button>
-        <button class="nav-item-btn" id="dock-profile-btn" title="Digital Profile">
+        <button class="nav-item-btn" id="dock-pulse-btn" title="Pulse Analytics">
+          <i data-lucide="zap"></i>
+          <span class="nav-label">Pulse</span>
+        </button>
+        <button class="nav-item-btn" id="dock-aihub-btn" title="AI Assistant Hub">
+          <i data-lucide="bot"></i>
+          <span class="nav-label">AI Hub</span>
+        </button>
+        <button class="nav-item-btn" id="dock-profile-btn" title="Digital Identity">
           <i data-lucide="user"></i>
           <span class="nav-label">Profile</span>
         </button>
-        <button class="nav-item-btn" id="dock-themes-btn" title="Aero Themes">
-          <i data-lucide="palette"></i>
-          <span class="nav-label">Themes</span>
-        </button>
-        <button class="nav-item-btn" id="dock-privacy-btn" title="Privacy Settings">
-          <i data-lucide="shield-check"></i>
-          <span class="nav-label">Privacy</span>
-        </button>
-        <button class="nav-item-btn" id="dock-admin-btn" title="Admin Control Center">
-          <i data-lucide="shield-alert"></i>
+        <button class="nav-item-btn" id="dock-admin-btn" title="Workspace Settings">
+          <i data-lucide="settings"></i>
           <span class="nav-label">Settings</span>
         </button>
       </nav>
@@ -234,6 +233,39 @@
             <button id="my-settings-shortcut" class="settings-shortcut-btn" title="Settings">
               <i data-lucide="settings"></i>
             </button>
+          </div>
+        </section>
+
+        <!-- Mood Selector state switcher -->
+        <section class="section mood-selector-section">
+          <label class="section-label">Your Mood</label>
+          <div class="mood-chips" id="mood-selector-container">
+            <button class="mood-chip active" data-mood="cosmic">🌌 Cosmic</button>
+            <button class="mood-chip" data-mood="focused">🎯 Focused</button>
+            <button class="mood-chip" data-mood="relaxed">🌴 Relaxed</button>
+            <button class="mood-chip" data-mood="nebula">🔮 Nebula</button>
+          </div>
+        </section>
+
+        <!-- Vibes story rings (PWA Statuses) -->
+        <section class="section vibes-story-section">
+          <label class="section-label">Active Vibes</label>
+          <div class="vibes-ring-container">
+            <div class="vibe-story-ring active-ring" title="Alex Vibe">
+              <div class="vibe-avatar" style="background-color: var(--primary-color)">A</div>
+              <span class="vibe-ring-tag">🌌</span>
+            </div>
+            <div class="vibe-story-ring active-ring" title="Taylor Vibe">
+              <div class="vibe-avatar" style="background-color: var(--secondary-color)">T</div>
+              <span class="vibe-ring-tag">🎯</span>
+            </div>
+            <div class="vibe-story-ring active-ring" title="Jordan Vibe">
+              <div class="vibe-avatar" style="background-color: var(--accent-color)">J</div>
+              <span class="vibe-ring-tag">🔮</span>
+            </div>
+            <div class="vibe-story-ring" title="Add Vibe">
+              <div class="vibe-avatar plus-vibe"><i data-lucide="plus"></i></div>
+            </div>
           </div>
         </section>
 
@@ -291,6 +323,36 @@
           <h2>Recent Conversations</h2>
           <ul id="active-chats-list" class="recent-list">
             <li class="empty-state">No active chats. Find a friend to connect.</li>
+          </ul>
+        </section>
+
+        <!-- Live Voice Rooms -->
+        <section class="section live-rooms-section">
+          <div class="section-header-row">
+            <h2>Live Rooms</h2>
+            <span class="live-badge pulsing"><i data-lucide="radio" class="small-icon"></i> Live</span>
+          </div>
+          <ul class="live-rooms-list">
+            <li class="room-item active-room">
+              <div class="room-info">
+                <i data-lucide="mic" class="room-icon glow-cyan"></i>
+                <div>
+                  <h4>Tech & Design Nebula</h4>
+                  <p>4 speakers • 12 listening</p>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline join-room-btn">Join</button>
+            </li>
+            <li class="room-item">
+              <div class="room-info">
+                <i data-lucide="mic" class="room-icon"></i>
+                <div>
+                  <h4>Crypto Cosmic Coffee</h4>
+                  <p>2 speakers • 3 listening</p>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline join-room-btn">Join</button>
+            </li>
           </ul>
         </section>
       </div>
@@ -526,6 +588,22 @@
                 </div>
               </div>
 
+              <!-- 3D Stickers Selector Panel -->
+              <div id="stickers-panel" class="stickers-panel hidden">
+                <header class="stickers-panel-header">
+                  <span>Cosmic 3D Stickers</span>
+                  <button id="close-stickers-btn" class="icon-btn-inline"><i data-lucide="x" class="small-icon"></i></button>
+                </header>
+                <div class="stickers-grid">
+                  <button class="sticker-item" data-sticker="🌌">🌌</button>
+                  <button class="sticker-item" data-sticker="🚀">🚀</button>
+                  <button class="sticker-item" data-sticker="👽">👽</button>
+                  <button class="sticker-item" data-sticker="🪐">🪐</button>
+                  <button class="sticker-item" data-sticker="✨">✨</button>
+                  <button class="sticker-item" data-sticker="☄️">☄️</button>
+                </div>
+              </div>
+
               <!-- Chat Input Footer -->
               <footer class="chat-footer">
                 <div id="file-preview-card" class="file-preview-card hidden">
@@ -542,7 +620,16 @@
                 </label>
                 <input type="file" id="file-input" class="hidden">
                 
+                <button type="button" id="chat-sticker-btn" class="attach-btn" title="Cosmic Stickers">
+                  <i data-lucide="smile"></i>
+                </button>
+                
                 <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+                
+                <button type="button" id="chat-voice-btn" class="attach-btn" title="Simulate Voice waveform">
+                  <i data-lucide="mic"></i>
+                </button>
+                
                 <button id="send-msg-btn" class="send-btn" title="Send Message"><i data-lucide="send"></i></button>
               </footer>
             </div>
@@ -981,6 +1068,129 @@
           </div>
         </div>
       </div>
+
+      <!-- PANE 8: PULSE ANALYTICS VIEWPORT (hidden) -->
+      <div id="pane-pulse" class="viewport-pane hidden">
+        <div class="pulse-layout">
+          <header class="feed-header-panel">
+            <div class="header-meta">
+              <h2>Pulse Activity Dashboard</h2>
+              <p>Track your real-time digital identity footprints and reputation statistics.</p>
+            </div>
+          </header>
+          <div class="profile-columns mt-3">
+            <!-- Digital Trust score -->
+            <div class="card pulse-stats-card">
+              <h3>Digital Trust Score</h3>
+              <div class="pulse-radial-indicator mt-3">
+                <div class="radial-score">
+                  <span class="score-number">185</span>
+                  <span class="score-max">/ 200</span>
+                </div>
+                <div class="radial-label">Pioneer Level</div>
+              </div>
+              <div class="stats-indicators-grid mt-4">
+                <div class="stat-indicator">
+                  <span class="indicator-label">Reputation Status</span>
+                  <strong class="text-success">EXCELLENT</strong>
+                </div>
+                <div class="stat-indicator">
+                  <span class="indicator-label">Network Tier</span>
+                  <strong class="text-accent">PIONEER II</strong>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Interaction analytics -->
+            <div class="card pulse-graph-card">
+              <h3>Connection Footprints</h3>
+              <ul class="connection-footprints-list mt-3">
+                <li>
+                  <span>WebSocket Sockets Connected</span>
+                  <strong>1 Active Node</strong>
+                </li>
+                <li>
+                  <span>Active RTC Audio Streams</span>
+                  <strong class="text-success">Ready</strong>
+                </li>
+                <li>
+                  <span>RTC Video Frame Resolution</span>
+                  <strong>1080p Ultra HD</strong>
+                </li>
+                <li>
+                  <span>Aero AI Fact-Check Verifications</span>
+                  <strong>28 Completed</strong>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 9: AI HUB VIEWPORT (hidden) -->
+      <div id="pane-aihub" class="viewport-pane hidden">
+        <div class="aihub-layout">
+          <header class="feed-header-panel">
+            <div class="header-meta">
+              <h2>Aero AI Hub</h2>
+              <p>Train your AI Twin simulator, analyze sentiment, or brainstorm posts instantly.</p>
+            </div>
+          </header>
+          <div class="profile-columns mt-3">
+            <!-- AI Twin Profile Customizer -->
+            <div class="card ai-twin-customizer-card">
+              <h3>Train Your AI Twin</h3>
+              <p class="small-text text-muted mb-3">Your AI Twin communicates with visitors to represent your profile.</p>
+              <div class="input-group">
+                <label for="ai-twin-instructions">Primary Directives</label>
+                <textarea id="ai-twin-instructions" class="text-area-profile" placeholder="Tell your AI Twin how to introduce you... (e.g. 'Be professional, highlight my Python and UI design expertise')"></textarea>
+              </div>
+              <div class="input-group mt-2">
+                <label>Simulator Status</label>
+                <div class="simulator-toggle-row">
+                  <span class="online-dot pulsing"></span>
+                  <span>🟢 Twin Active & Responding</span>
+                </div>
+              </div>
+              <button class="btn btn-accent mt-3 w-100" id="save-twin-directives-btn">Save Training Profile</button>
+            </div>
+            
+            <!-- AI Creative Assistant Tools -->
+            <div class="card ai-tools-card">
+              <h3>AI Assistant Widgets</h3>
+              <div class="ai-hub-tools-grid mt-3">
+                <button class="ai-tool-widget-btn" id="ai-hub-btn-brainstorm">
+                  <i data-lucide="brain"></i>
+                  <h4>Brainstorm Ideas</h4>
+                  <p>Generate cosmic post topics</p>
+                </button>
+                <button class="ai-tool-widget-btn" id="ai-hub-btn-mood">
+                  <i data-lucide="smile"></i>
+                  <h4>Mood Sentiment</h4>
+                  <p>Analyze text emotional weight</p>
+                </button>
+                <button class="ai-tool-widget-btn" id="ai-hub-btn-post">
+                  <i data-lucide="pencil"></i>
+                  <h4>Draft Universe Post</h4>
+                  <p>Auto-generate post copy</p>
+                </button>
+                <button class="ai-tool-widget-btn" id="ai-hub-btn-grammar">
+                  <i data-lucide="check-square"></i>
+                  <h4>Grammar Scrutiny</h4>
+                  <p>Analyze active buffers</p>
+                </button>
+              </div>
+              <div id="ai-hub-output-box" class="ai-hub-output-box mt-3 hidden">
+                <div class="ai-output-header">
+                  <i data-lucide="bot" class="glow-cyan small-icon"></i>
+                  <span>AI Copilot Insight</span>
+                </div>
+                <p id="ai-hub-output-text" class="small-text mt-1">Ready...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- POPUP MODALS -->
@@ -1102,25 +1312,24 @@
 
     <!-- Mobile Bottom Navigation Bar -->
     <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-      <button class="mobile-nav-btn active" id="mobile-nav-chats" title="Chat">
-        <i data-lucide="message-square"></i>
-        <span>Chat</span>
+      <button class="mobile-nav-btn active" id="mobile-nav-chats" title="Home Hub">
+        <i data-lucide="home"></i>
+        <span>Home</span>
       </button>
-      <button class="mobile-nav-btn" id="mobile-nav-feed" title="Feed">
-        <i data-lucide="rss"></i>
-        <span>Feed</span>
+      <button class="mobile-nav-btn" id="mobile-nav-themes" title="User Vibes">
+        <i data-lucide="aperture"></i>
+        <span>Vibes</span>
       </button>
-      <button class="mobile-nav-btn" id="mobile-nav-skills" title="Discover">
-        <i data-lucide="compass"></i>
-        <span>Discover</span>
+      <button class="mobile-nav-btn mobile-nav-fab" id="mobile-nav-create" title="Create Post">
+        <i data-lucide="plus"></i>
       </button>
-      <button class="mobile-nav-btn" id="mobile-nav-profile" title="Profile">
+      <button class="mobile-nav-btn" id="mobile-nav-pulse" title="Pulse Analytics">
+        <i data-lucide="zap"></i>
+        <span>Pulse</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobile-nav-profile" title="Digital Profile">
         <i data-lucide="user"></i>
         <span>Profile</span>
-      </button>
-      <button class="mobile-nav-btn" id="mobile-nav-admin" title="Settings">
-        <i data-lucide="settings"></i>
-        <span>Settings</span>
       </button>
     </nav>
   </div>
