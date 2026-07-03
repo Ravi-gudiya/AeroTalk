@@ -3848,6 +3848,19 @@ kbd {
   .recent-item {
     padding: 12px 16px;
   }
+
+  /* Chat window screen overrides to fit screen perfectly on mobile */
+  #pane-chats {
+    padding: 0 !important;
+  }
+  .chat-window {
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .chat-main-area {
+    border-right: none !important;
+  }
 }
 
 /* ==========================================================================
