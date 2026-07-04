@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      alert("AeroTalk JS Error: " + message + " at " + lineno + ":" + colno);
+      return false;
+    };
+    window.onunhandledrejection = function(event) {
+      alert("AeroTalk Unhandled Promise Rejection: " + event.reason);
+    };
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AeroTalk | Premium Chat & Calling Platform</title>
   <meta name="description" content="Connect, text chat, and make crystal-clear audio and video calls directly from your browser using WebRTC. Modern, secure, and instant peer-to-peer communication.">
