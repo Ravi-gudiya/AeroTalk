@@ -2728,6 +2728,10 @@ body::after {
   transition: var(--transition-smooth);
 }
 
+.settings-shortcut-btn * {
+  pointer-events: none;
+}
+
 .settings-shortcut-btn:hover {
   border-color: var(--accent-color);
   color: var(--accent-color);
@@ -3906,6 +3910,10 @@ kbd {
   #chat-input {
     padding: 8px 12px !important;
     font-size: 0.82rem !important;
+  }
+  .settings-shortcut-btn {
+    width: 38px !important;
+    height: 38px !important;
   }
 }
 

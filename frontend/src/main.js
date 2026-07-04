@@ -3594,6 +3594,13 @@ function setupThemeCreatorAndCustomizers() {
     });
   }
 
+  const mySettingsShortcut = document.getElementById('my-settings-shortcut');
+  if (mySettingsShortcut) {
+    mySettingsShortcut.addEventListener('click', () => {
+      switchDockTab('admin');
+    });
+  }
+
   if (closePendingRequestsModal && pendingReqModal) {
     closePendingRequestsModal.addEventListener('click', () => {
       pendingReqModal.classList.add('hidden');
