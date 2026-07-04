@@ -1831,13 +1831,19 @@ function setupUIEvents() {
     }
   });
 
-  // Logout Click (both sidebar & mobile drawer)
+  // Logout Click (sidebar, mobile drawer, & profile pane)
   logoutBtn.addEventListener('click', () => {
     handleLogout();
   });
   const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
   if (mobileLogoutBtn) {
     mobileLogoutBtn.addEventListener('click', () => {
+      handleLogout();
+    });
+  }
+  const paneLogoutBtn = document.getElementById('pane-logout-btn');
+  if (paneLogoutBtn) {
+    paneLogoutBtn.addEventListener('click', () => {
       handleLogout();
     });
   }
