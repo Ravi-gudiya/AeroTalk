@@ -779,11 +779,16 @@ async function acceptFriendRequest(senderEmail) {
       },
       body: JSON.stringify({ senderEmail })
     });
-    if (res.status === 200) {
+    const data = await res.json();
+    if (res.status === 200 && !data.error) {
+      alert('Friend request accepted!');
       fetchFriends();
+    } else {
+      alert(data.error || 'Failed to accept friend request.');
     }
   } catch (err) {
     console.error('Failed to accept friend request', err);
+    alert('Failed to accept friend request: server error.');
   }
 }
 
@@ -797,11 +802,16 @@ async function declineFriendRequest(targetEmail) {
       },
       body: JSON.stringify({ targetEmail })
     });
-    if (res.status === 200) {
+    const data = await res.json();
+    if (res.status === 200 && !data.error) {
+      alert('Friend request declined.');
       fetchFriends();
+    } else {
+      alert(data.error || 'Failed to decline friend request.');
     }
   } catch (err) {
     console.error('Failed to decline friend request', err);
+    alert('Failed to decline friend request: server error.');
   }
 }
 

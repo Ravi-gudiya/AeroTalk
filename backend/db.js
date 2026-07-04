@@ -338,15 +338,34 @@ export const DB = {
     const sender = senderEmail.toLowerCase().trim();
     
     if (isSupabaseActive()) {
-      const { error } = await supabase
+      let { data, error } = await supabase
         .from('friends')
         .update({ status: 'accepted' })
         .eq('sender_email', sender)
-        .eq('receiver_email', receiver);
-      return !error;
+        .eq('receiver_email', receiver)
+        .select();
+        
+      if (error) console.error('[Supabase DB Error] acceptFriendRequest 1:', error);
+      
+      if (!data || data.length === 0) {
+        const res2 = await supabase
+          .from('friends')
+          .update({ status: 'accepted' })
+          .eq('sender_email', receiver)
+          .eq('receiver_email', sender)
+          .select();
+        if (res2.error) console.error('[Supabase DB Error] acceptFriendRequest 2:', res2.error);
+        data = res2.data;
+        error = res2.error;
+      }
+      
+      return !error && data && data.length > 0;
     } else {
       const data = readLocalData();
-      const req = data.friends.find(f => f.senderEmail === sender && f.receiverEmail === receiver);
+      const req = data.friends.find(f => 
+        (f.senderEmail === sender && f.receiverEmail === receiver) ||
+        (f.senderEmail === receiver && f.receiverEmail === sender)
+      );
       if (!req) return false;
       req.status = 'accepted';
       writeLocalData(data);
