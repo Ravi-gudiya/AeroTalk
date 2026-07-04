@@ -1831,10 +1831,16 @@ function setupUIEvents() {
     }
   });
 
-  // Logout Click
+  // Logout Click (both sidebar & mobile drawer)
   logoutBtn.addEventListener('click', () => {
     handleLogout();
   });
+  const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+  if (mobileLogoutBtn) {
+    mobileLogoutBtn.addEventListener('click', () => {
+      handleLogout();
+    });
+  }
 
 
   // Search Friend Email
