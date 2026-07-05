@@ -7,7 +7,7 @@ import { SoundEffects } from './sound-effects.js';
 let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aerotalk.onrender.com';
 
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  API_BASE_URL = 'http://localhost:5000';
+  API_BASE_URL = 'http://127.0.0.1:5000';
 }
 
 if (API_BASE_URL.endsWith('/')) {

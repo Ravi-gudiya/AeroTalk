@@ -7,11 +7,11 @@ export default defineConfig({
     allowedHosts: true, // Allow any host (localtunnel subdomains, ngrok, etc.) to bypass DNS rebinding checks
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'http://localhost:5000',
+        target: 'http://127.0.0.1:5000',
         ws: true,
         changeOrigin: true,
       }
