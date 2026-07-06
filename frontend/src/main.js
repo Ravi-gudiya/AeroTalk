@@ -631,7 +631,7 @@ function renderFeed(posts) {
     `;
   }
 
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // Global Avatar Rendering Helper
@@ -737,7 +737,7 @@ async function searchUsersByEmail(query) {
 
         searchResults.appendChild(li);
       });
-      window.lucide.createIcons();
+      if (window.lucide) window.lucide.createIcons();
     }
     searchResults.classList.remove('hidden');
   } catch (err) {
@@ -1009,7 +1009,7 @@ function toggleMute() {
   localStream.getAudioTracks().forEach(track => { track.enabled = !isMuted; });
   toggleMicBtn.classList.toggle('active', isMuted);
   toggleMicBtn.innerHTML = isMuted ? '<i data-lucide="mic-off"></i>' : '<i data-lucide="mic"></i>';
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function toggleCamera() {
@@ -1022,7 +1022,7 @@ function toggleCamera() {
 
   toggleCamBtn.classList.toggle('active', isVideoOff);
   toggleCamBtn.innerHTML = isVideoOff ? '<i data-lucide="video-off"></i>' : '<i data-lucide="video"></i>';
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
   
   if (isVideoOff) {
     localVideoContainer.classList.add('hidden');
@@ -1420,7 +1420,7 @@ function appendMessageUI(msg) {
 
   chatMessages.appendChild(container);
   chatMessages.scrollTop = chatMessages.scrollHeight;
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function updateFriendsUI() {
@@ -1630,7 +1630,7 @@ function updateFriendsUI() {
       });
     }
   }
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function updateGroupsUI() {
@@ -1662,7 +1662,7 @@ function updateGroupsUI() {
 
     groupsListEl.appendChild(li);
   });
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function updateActiveChatsUI() {
@@ -2333,7 +2333,7 @@ function setupUIEvents() {
         toggleSidebarExpand.title = "Collapse Menu";
         if (icon) icon.setAttribute('data-lucide', 'chevrons-left');
       }
-      window.lucide.createIcons();
+      if (window.lucide) window.lucide.createIcons();
     });
   }
 
@@ -2593,6 +2593,56 @@ function setupUIEvents() {
       } else {
         showAiHubOutput("[Aero AI Grammar Engine] Active chat input buffer is empty. Type a draft to analyze grammar.");
       }
+    });
+  }
+
+  // --- Pending Requests & Header shortcut bindings ---
+  const pendingReqModal = document.getElementById('pending-requests-modal');
+  const showPendingRequestsBtn = document.getElementById('show-pending-requests-btn');
+  const closePendingRequestsModal = document.getElementById('close-pending-requests-modal');
+
+  if (showPendingRequestsBtn && pendingReqModal) {
+    showPendingRequestsBtn.addEventListener('click', () => {
+      updateFriendsUI(); // Re-render requests inside the modal lists
+      pendingReqModal.classList.remove('hidden');
+    });
+  }
+
+  const mySettingsShortcut = document.getElementById('my-settings-shortcut');
+  if (mySettingsShortcut) {
+    mySettingsShortcut.addEventListener('click', () => {
+      switchDockTab('admin');
+    });
+  }
+
+  if (closePendingRequestsModal && pendingReqModal) {
+    closePendingRequestsModal.addEventListener('click', () => {
+      pendingReqModal.classList.add('hidden');
+    });
+  }
+
+  // --- Life OS Dashboard Quick Create Button Bindings ---
+  const qVibe = document.getElementById('quick-vibe-btn');
+  const qSpace = document.getElementById('quick-space-btn');
+  const qEvent = document.getElementById('quick-event-btn');
+  const qPoll = document.getElementById('quick-poll-btn');
+  const qStory = document.getElementById('quick-story-btn');
+
+  if (qVibe) qVibe.addEventListener('click', () => switchDockTab('vibe'));
+  if (qStory) qStory.addEventListener('click', () => switchDockTab('vibe'));
+  if (qSpace) qSpace.addEventListener('click', () => switchDockTab('skills'));
+  
+  if (qEvent) {
+    qEvent.addEventListener('click', () => {
+      const desc = prompt("Plan an Event (AeroMind Scheduling):\n\nEnter event description, time, and location:");
+      if (desc) alert(`AeroMind scheduled your event: "${desc}" and broadcasted invitation to all online friends.`);
+    });
+  }
+
+  if (qPoll) {
+    qPoll.addEventListener('click', () => {
+      const question = prompt("Create a Poll (Spaces Community Feed):\n\nEnter your poll question:");
+      if (question) alert(`Created poll: "${question}" in your active Spaces circles.`);
     });
   }
 }
@@ -2912,7 +2962,7 @@ function renderCapsulesBoard(capsules) {
     `;
     listEl.appendChild(li);
   });
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // 6. Skill matches dynamic rendering
@@ -3249,7 +3299,7 @@ function renderThemeGallery() {
 
     gridEl.appendChild(card);
   });
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
   setupThemeCreatorAndCustomizers();
 }
 
@@ -3581,57 +3631,7 @@ function setupThemeCreatorAndCustomizers() {
         sendFriendReqSubmit.textContent = "Send Friend Request";
       }
     });
-  }
-
-  const pendingReqModal = document.getElementById('pending-requests-modal');
-  const showPendingRequestsBtn = document.getElementById('show-pending-requests-btn');
-  const closePendingRequestsModal = document.getElementById('close-pending-requests-modal');
-
-  if (showPendingRequestsBtn && pendingReqModal) {
-    showPendingRequestsBtn.addEventListener('click', () => {
-      updateFriendsUI(); // Re-render requests inside the modal lists
-      pendingReqModal.classList.remove('hidden');
-    });
-  }
-
-  const mySettingsShortcut = document.getElementById('my-settings-shortcut');
-  if (mySettingsShortcut) {
-    mySettingsShortcut.addEventListener('click', () => {
-      switchDockTab('admin');
-    });
-  }
-
-  if (closePendingRequestsModal && pendingReqModal) {
-    closePendingRequestsModal.addEventListener('click', () => {
-      pendingReqModal.classList.add('hidden');
-    });
-  }
-
-  // --- Life OS Dashboard Quick Create Button Bindings ---
-  const qVibe = document.getElementById('quick-vibe-btn');
-  const qSpace = document.getElementById('quick-space-btn');
-  const qEvent = document.getElementById('quick-event-btn');
-  const qPoll = document.getElementById('quick-poll-btn');
-  const qStory = document.getElementById('quick-story-btn');
-
-  if (qVibe) qVibe.addEventListener('click', () => switchDockTab('vibe'));
-  if (qStory) qStory.addEventListener('click', () => switchDockTab('vibe'));
-  if (qSpace) qSpace.addEventListener('click', () => switchDockTab('skills'));
-  
-  if (qEvent) {
-    qEvent.addEventListener('click', () => {
-      const desc = prompt("Plan an Event (AeroMind Scheduling):\n\nEnter event description, time, and location:");
-      if (desc) alert(`AeroMind scheduled your event: "${desc}" and broadcasted invitation to all online friends.`);
-    });
-  }
-
-  if (qPoll) {
-    qPoll.addEventListener('click', () => {
-      const question = prompt("Create a Poll (Spaces Community Feed):\n\nEnter your poll question:");
-      if (question) alert(`Created poll: "${question}" in your active Spaces circles.`);
-    });
-  }
-}
+  }}
 
 // Fetch and render unexpired 24h PWA moments
 async function fetchMoments() {
@@ -3685,7 +3685,7 @@ async function fetchMoments() {
         container.appendChild(div);
       });
     }
-    window.lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
   } catch (err) {
     console.error('[Moments Engine] Error fetching stories', err);
   }
@@ -3763,7 +3763,7 @@ function renderPulse() {
       </div>
     </div>
   `).join('');
-  window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 let questsCompleted = [false, false, false, false, false, false];
@@ -3873,7 +3873,7 @@ function renderSpaces() {
         </div>
       `;
     }).join('');
-    window.lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
   }
 
   drawGrid();
